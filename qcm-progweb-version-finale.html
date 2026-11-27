@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QCM – Programmation Web (Forax) – banque de questions</title>
+<style>
+  :root{--bg:#16171b;--card:#1f2026;--card2:#26272e;--ink:#e8e8ec;--muted:#9a9aa3;--line:#33343c;
+    --accent:#7c94ff;--ok:#51cf66;--okbg:#1c3324;--ko:#ff6b6b;--kobg:#3a1f22;--hint:#ffd43b;--var:#c9a7ff}
+  html{color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 18px 80px}
+  h1{font-size:1.6rem;margin:0 0 4px}
+  .sub{color:var(--muted);margin:0 0 20px}
+  a{color:var(--accent)}
+  .bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line);margin-bottom:18px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:.85rem;cursor:pointer}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#0f1013}
+  .progress{margin-left:12px;font-size:.85rem;color:var(--muted)}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+  .tag{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--accent);font-weight:600}
+  .q h3{font-size:1rem;margin:4px 0 10px;font-weight:600}
+  pre{background:#0f1013;color:#e9e9ef;padding:12px 14px;border-radius:8px;overflow-x:auto;font-size:.86rem;margin:0 0 12px}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace}
+  label.opt{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer}
+  label.opt:hover{border-color:#555660}
+  label.opt input{margin-top:4px}
+  label.opt.good{background:var(--okbg);border-color:var(--ok)}
+  label.opt.bad{background:var(--kobg);border-color:var(--ko)}
+  .slides{margin-top:12px;font-size:.88rem;color:var(--muted)}
+  .slides b{color:var(--ink)}
+  .hintbtn{margin-top:8px;background:none;border:1px dashed var(--hint);color:var(--hint);border-radius:6px;padding:4px 10px;font-size:.85rem;cursor:pointer}
+  .hint{display:none;margin-top:6px;font-size:.9rem;color:var(--hint)}
+  .hint.show{display:block}
+  .corr{margin-top:14px;padding:12px 14px;background:var(--card2);border-radius:8px;border-left:3px solid var(--accent)}
+  .corr h4{margin:0 0 8px;font-size:.95rem}
+  .corr ul{margin:4px 0 10px;padding-left:0;list-style:none}
+  .corr li{margin-bottom:4px;font-size:.9rem}
+  .corr .lbl{font-weight:600;font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-top:8px}
+  .corr p{margin:2px 0 6px;font-size:.92rem}
+  .verdict{font-weight:700}
+  .verdict.ok{color:var(--ok)} .verdict.ko{color:var(--ko)}
+  .variant{margin-top:14px;padding:14px;border:1px solid var(--var);border-radius:10px}
+  .variant .tag{color:var(--var)}
+  .checkbtn{background:var(--var);color:#0f1013;border:0;border-radius:6px;padding:7px 14px;cursor:pointer;font-size:.9rem;margin-top:4px}
+  .club{font-size:.78rem;font-weight:500;color:var(--hint);margin-left:6px;white-space:nowrap}
+  .timer{margin-left:auto;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+  .timer.late{color:var(--ko)}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+  button.main{background:var(--accent);color:#0f1013;border:0;border-radius:8px;padding:12px 20px;font-size:1rem;cursor:pointer}
+  button.sec{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:12px 20px;font-size:1rem;cursor:pointer}
+  .score{display:none;background:var(--card);border:2px solid var(--accent);border-radius:12px;padding:18px;margin-bottom:18px}
+  .score h2{margin:0 0 8px}
+  .score table{border-collapse:collapse;width:100%;font-size:.9rem}
+  .score td{padding:4px 6px;border-bottom:1px solid var(--line)}
+  .score td:last-child{text-align:right;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>QCM – Programmation Web</h1>
+  <p class="sub">Cours de Rémi Forax · chapitres 1 à 6 · style examen. <b>Examen blanc</b> : 40 questions tirées au hasard (40 questions rédigées + 42 modèles de questions générées avec des valeurs aléatoires, donc des milliers de questions différentes), avec un chrono d'1 h. Les réponses aux questions de code sont calculées en exécutant vraiment le code. Les questions ♣ peuvent avoir zéro, une ou plusieurs bonnes réponses (juste seulement si tu coches exactement les bonnes). Teste les codes dans la console du navigateur (F12) : certains éditeurs comme RunJS cachent ce qui est affiché avant une erreur.</p>
+  <div class="bar" id="bar"></div>
+  <div class="score" id="score"></div>
+  <div id="quiz"></div>
+  <div class="actions">
+    <button class="main" id="submit">Voir mes résultats</button>
+    <button class="sec" id="reset">🎲 Nouveau tirage</button>
+  </div>
+</div>
+<script>const NONE = "Aucune de ces réponses n'est correcte.";
+const HQ = [
+/* ================= 1. INTERNET & WEB ================= */
+{c:"web", m:true, s:"« Codes de statut », « Structure de la réponse », « Content-Length et Content-Type »",
+ h:"Le code de statut donne le résultat de la demande ; Content-Length donne la taille du corps.",
+ q:"Lesquelles de ces affirmations sur la réponse suivante sont vraies ?",
+ code:"HTTP/1.1 301 Moved Permanently\nLocation: https://www.site.fr/\nContent-Length: 0\n",
+ o:["La page demandée a été déplacée définitivement","Le corps de la réponse est vide","La requête a échoué car le client l'a mal écrite",NONE], a:[0,1],
+ w:["301 = Moved Permanently : la page a déménagé pour de bon.","Content-Length: 0 → le corps fait 0 octet.","Une requête mal écrite donnerait 400 Bad Request.","A et B sont vraies."],
+ k:"Codes du cours : 200 OK, 301 Moved Permanently, 400 Bad Request, 401 Unauthorized, 404 Not Found. Content-Length est la taille du corps en octets.",
+ n:"Le code de statut dit ce qui s'est passé ; Content-Length 0 veut dire qu'il n'y a pas de corps.",
+ z:"Le facteur te rend ta lettre avec un mot « il a déménagé » et rien d'autre dans l'enveloppe.",
+ v:{m:true, q:"Lesquelles de ces affirmations sur cette réponse sont vraies ?",
+  code:"HTTP/1.1 404 Not Found\nContent-Type: text/html; charset=utf-8\nContent-Length: 120\n",
+  o:["La ressource demandée n'existe pas sur le serveur","Le corps est une page HTML de 120 octets","Le serveur demande une authentification",NONE], a:[0,1],
+  w:["404 = Not Found.","text/html et 120 octets : c'est une petite page d'erreur.","L'authentification, c'est 401.","A et B sont vraies."],
+  k:"404 = Not Found, 401 = Unauthorized ; Content-Type est le type MIME du corps.",
+  n:"Même avec une erreur, le serveur peut renvoyer une page HTML qui l'explique.",
+  z:"Le magasin te dit « on n'a pas ce jouet » sur un petit papier de 120 lettres."}},
+
+{c:"web", s:"« Plusieurs requêtes par page » (web.html) + « iframe » et « Images » (html.html) + « Trois façons d'appliquer un style » (css.html)",
+ h:"Une requête par FICHIER à récupérer. Ce qui est écrit directement dans la page ne coûte rien de plus.",
+ q:"Une page HTML contient une balise <code>&lt;style&gt;</code> avec du CSS, 1 image, et une <code>&lt;iframe&gt;</code> qui affiche une autre page HTML contenant elle-même 1 image. Combien de requêtes HTTP le navigateur fait-il ?",
+ o:["2","3","4","5"], a:2,
+ w:["Tu oublies la page de l'iframe et son image.","Tu oublies l'image de la page de l'iframe.","Page (1) + image (1) + page de l'iframe (1) + son image (1) = 4 ; le CSS de &lt;style&gt; est déjà dans la page.","Le CSS dans &lt;style&gt; n'est pas un fichier séparé."],
+ k:"Une page nécessite une requête pour le HTML, puis une par ressource. Une iframe inclut un document dans un autre. La balise &lt;style&gt; met le CSS dans la page, alors qu'un fichier .css s'ajoute avec &lt;link&gt;.",
+ n:"On compte les fichiers séparés ; une iframe est une vraie page en plus, avec ses propres ressources.",
+ z:"Chaque jouet rangé dans une autre boîte demande un aller-retour ; ce qui est déjà dans ta boîte ne compte pas.",
+ v:{q:"Une page contient 2 balises <code>&lt;link rel=\"stylesheet\"&gt;</code> vers deux fichiers CSS, 3 images et une balise <code>&lt;style&gt;</code>. Combien de requêtes HTTP ?",
+  o:["4","5","6","7"], a:2,
+  w:["Tu oublies des fichiers.","Tu oublies le HTML ou une image.","1 HTML + 2 CSS + 3 images = 6.","&lt;style&gt; ne déclenche pas de requête."],
+  k:"Un fichier .css externe se partage via &lt;link&gt; ; chaque ressource externe demande une requête.",
+  n:"&lt;link&gt; = un fichier à aller chercher ; &lt;style&gt; = déjà là.",
+  z:"Les deux classeurs sont dans une autre pièce, le post-it est déjà sur ta table."}},
+
+{c:"web", m:true, s:"« ping », « TTL », « DNS », « host »",
+ h:"Quel est le TTL de départ le plus proche au-dessus de 118 ? Et pour envoyer un paquet à www.univ-eiffel.fr, de quoi a-t-on besoin d'abord ?",
+ q:"Tu tapes <code>ping www.univ-eiffel.fr</code> et tu obtiens la ligne suivante. Que peut-on en déduire ?",
+ code:"64 bytes from 193.55.45.17: icmp_seq=1 ttl=118 time=12.1 ms",
+ o:["Le serveur est probablement sous Windows, et la réponse a traversé environ 10 routeurs","La réponse a traversé 118 routeurs","Le nom www.univ-eiffel.fr a été traduit en adresse IP grâce au DNS",NONE], a:[0,2],
+ w:["118 &lt; 128 (Windows) et &gt; 64 (Linux) → départ 128 → 128 − 118 = 10.","118 est ce qui reste du TTL, pas un nombre de routeurs.","ping a besoin d'une IP : le nom a été résolu en 193.55.45.17.","A et C sont vraies."],
+ k:"ping envoie des paquets ICMP à une adresse IP. Le TTL baisse de 1 par routeur et vaut au départ 64 (Linux/macOS) ou 128 (Windows). Le DNS donne l'adresse IP d'un nom de machine.",
+ n:"On devine l'OS grâce au TTL de départ le plus proche, et un nom passe toujours par le DNS avant l'envoi.",
+ z:"Pour envoyer une lettre, il faut d'abord trouver l'adresse dans l'annuaire (DNS) ; il restait 118 bonbons sur 128, donc 10 routeurs croisés.",
+ v:{m:true, q:"Tu tapes <code>ping 8.8.8.8</code> et tu obtiens <code>ttl=57</code>. Que peut-on en déduire ?",
+  o:["Si le serveur est sous Linux, la réponse a traversé environ 7 routeurs","Le DNS a été utilisé pour trouver l'adresse","Si le TTL d'un paquet tombe à 0, le paquet est détruit",NONE], a:[0,2],
+  w:["64 − 57 = 7.","On a donné une IP directement : pas besoin du DNS.","C'est le rôle du TTL : à 0, le paquet est jeté et une erreur ICMP est renvoyée.","A et C sont vraies."],
+  k:"Si le TTL atteint 0, le paquet est détruit et une erreur ICMP « Time Exceeded » est renvoyée.",
+  n:"Avec une IP, pas de DNS ; avec un nom, DNS obligatoire.",
+  z:"Si tu connais déjà l'adresse, tu n'ouvres pas l'annuaire."}},
+
+{c:"web", s:"« URL », « Composants d'une URL », « HTTP/1.1 et l'en-tête Host », « netcat »",
+ h:"Découpe l'URL : protocole, nom d'hôte, chemin. Le chemin va sur la ligne GET, le nom d'hôte dans Host.",
+ q:"Après <code>nc forax.github.io 80</code>, que faut-il taper pour obtenir <code>http://forax.github.io/course/index.html</code> ?",
+ code:"A) GET /course/index.html HTTP/1.1\n   Host: forax.github.io\n   (ligne vide)\n\nB) GET /course/index.html HTTP/1.0\n   (ligne vide)\n\nC) GET forax.github.io HTTP/1.1\n   Host: /course/index.html\n   (ligne vide)\n\nD) GET /course/index.html\n   Host: forax.github.io\n   (ligne vide)",
+ o:["A","B","C","D"], a:0,
+ w:["Chemin sur la ligne GET, version HTTP/1.1, nom d'hôte dans Host, puis ligne vide.","Sans Host, GitHub renvoie 404 (exemple du cours).","Le chemin et le nom d'hôte sont inversés.","Il manque la version HTTP à la fin de la ligne GET."],
+ k:"Une URL se compose d'un protocole (http/https), d'un nom d'hôte (ex. www.google.fr) et d'un chemin (ex. /images/branding). En HTTP/1.1, l'en-tête Host est obligatoire.",
+ n:"GET + chemin + version, puis Host + nom d'hôte, puis une ligne vide.",
+ z:"Sur l'enveloppe : le nom de la ville (Host) ; dans la lettre : quel tiroir ouvrir (le chemin).",
+ v:{q:"Avec <code>nc www.site.fr 80</code>, tu tapes la requête suivante. Quelle URL as-tu demandée ?",
+  code:"GET /images/logo.png HTTP/1.1\nHost: www.site.fr\n\n",
+  o:["http://www.site.fr/images/logo.png","http://images/logo.png","www.site.fr","http://www.site.fr/HTTP/1.1"], a:0,
+  w:["Protocole http (port 80) + Host + chemin.","Il manque le nom d'hôte.","Il manque le protocole et le chemin.","HTTP/1.1 est la version, pas une partie du chemin."],
+  k:"URL = protocole + nom d'hôte + chemin.",
+  n:"On recolle les morceaux : http:// + Host + chemin.",
+  z:"Ville + rue + numéro = l'adresse complète."}},
+
+{c:"web", m:true, s:"« Content-Length et Content-Type », « Types MIME »",
+ h:"Content-Length est un nombre d'octets, sans unité. Content-Type est un type MIME (type/sous-type).",
+ q:"Le serveur envoie une photo JPEG de 2 Mo. Quels en-têtes sont corrects ?",
+ o:["Content-Type: image/jpeg","Content-Length: 2 Mo","Content-Type: text/plain; charset=utf-8",NONE], a:[0],
+ w:["image/jpeg est le type MIME d'une image JPEG.","Content-Length s'écrit en octets, sans unité (environ 2000000).","Une photo n'est pas du texte.","A est correct."],
+ k:"Content-Length = taille du corps en octets. Content-Type = type du corps au format MIME, par exemple text/html; charset=utf-8, image/jpeg, video/mp4.",
+ n:"Content-Length est un nombre d'octets ; Content-Type est un type MIME.",
+ z:"Sur le colis, on écrit « photo » et le poids en grammes, pas « 2 gros paquets »."
+ ,v:{m:true, q:"Le serveur renvoie une page HTML de 6042 octets encodée en UTF-8. Quels en-têtes sont corrects ?",
+  o:["Content-Length: 6042","Content-Type: text/html; charset=utf-8","Content-Type: html",NONE], a:[0,1],
+  w:["La taille en octets.","Type MIME + encodage.","Un type MIME s'écrit type/sous-type : text/html.","A et B sont corrects."],
+  k:"text/html; charset=utf-8 est le type MIME d'une page HTML en UTF-8.",
+  n:"Un type MIME, c'est toujours « famille/précision ».",
+  z:"On écrit « texte/page web », pas juste « page »."}},
+
+{c:"web", s:"« HTTPS », « Chiffrement asymétrique », « Certificats »",
+ h:"L'asymétrique sert à se mettre d'accord au début. Ensuite, avec quoi chiffre-t-on ?",
+ q:"Avec HTTPS, quelle clé sert à chiffrer la plus grande partie des données échangées ?",
+ o:["La clé publique du serveur","La clé privée du serveur","Une clé symétrique échangée au début de la connexion","Le certificat"], a:2,
+ w:["Elle sert seulement à échanger la clé symétrique au début.","La clé privée reste secrète sur le serveur ; elle sert à déchiffrer ce qui a été chiffré avec la clé publique.","Asymétrique pour échanger la clé, puis tout le reste en symétrique.","Le certificat lie un nom de domaine à une clé publique, ce n'est pas une clé de chiffrement."],
+ k:"HTTPS utilise le chiffrement asymétrique entre client et serveur pour échanger une clé symétrique ; le reste de l'échange est chiffré avec cette clé symétrique.",
+ n:"Asymétrique au début, symétrique pour tout le reste.",
+ z:"On s'envoie la clé du coffre dans un cadenas spécial, puis on utilise le coffre pour tout."
+ ,v:{q:"Qui garantit que la clé publique reçue appartient bien à www.banque.fr ?",
+  o:["Le DNS","Une autorité de certification qui a signé le certificat","Le routeur","Le protocole TCP"], a:1,
+  w:["Le DNS donne une IP, il ne prouve rien sur les clés.","La CA signe le lien nom de domaine ↔ clé publique.","Le routeur ne fait que transmettre les paquets.","TCP gère la connexion, pas l'identité."],
+  k:"Une autorité de certification signe un certificat qui lie un nom de domaine à une clé publique ; les navigateurs connaissent les clés des CA reconnues.",
+  n:"Le certificat signé par une CA prouve à qui appartient la clé.",
+  z:"C'est le tampon de la mairie sur la carte d'identité du site."}},
+
+/* ================= 2. HTML ================= */
+{c:"html", m:true, s:"« Éléments entrelacés », « Éléments vides », « Listes »",
+ h:"Vérifie que chaque balise est fermée dans l'ordre inverse de son ouverture.",
+ q:"Indiquer le ou les codes HTML qui ne sont PAS valides.",
+ o:["&lt;ul&gt;&lt;li&gt;a&lt;/li&gt;&lt;li&gt;b&lt;/ul&gt;&lt;/li&gt;","&lt;p&gt;a&lt;br&gt;b&lt;/p&gt;","&lt;b&gt;&lt;i&gt;x&lt;/b&gt;&lt;/i&gt;",NONE], a:[0,2],
+ w:["&lt;/ul&gt; ferme avant &lt;/li&gt; : éléments entrelacés.","br n'a pas de balise fermante : c'est valide.","&lt;/b&gt; ferme avant &lt;/i&gt; : éléments entrelacés.","A et C sont invalides."],
+ k:"Les éléments entrelacés sont interdits (on ne peut pas construire d'arbre). br est un élément sans balise fermante.",
+ n:"La dernière balise ouverte doit être la première fermée.",
+ z:"Poupées russes : on referme la petite avant la grande.",
+ v:{m:true, q:"Indiquer le ou les codes HTML qui ne sont PAS valides.",
+  o:["&lt;table&gt;&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;","&lt;a href=\"#top\"&gt;haut&lt;/a&gt;","&lt;section&gt;&lt;p&gt;x&lt;/section&gt;&lt;/p&gt;",NONE], a:[2],
+  w:["table &gt; tr &gt; td, bien fermés : valide.","Lien vers une ancre : valide.","&lt;/section&gt; ferme avant &lt;/p&gt; : entrelacés.","C est invalide."],
+  k:"Une table contient des tr qui contiennent des td ; les éléments entrelacés sont interdits.",
+  n:"Les fermetures doivent suivre l'ordre inverse des ouvertures.",
+  z:"On ne range pas la grande boîte avant d'avoir fermé la petite qui est dedans."}},
+
+{c:"html", s:"« Arbre des éléments et DOM »",
+ h:"Suis le chemin le plus long en descendant, et compte les éléments (pas le texte).",
+ q:"Combien d'éléments y a-t-il sur le plus long chemin, de <code>html</code> jusqu'à l'élément le plus profond ?",
+ code:"<html>\n  <body>\n    <section>\n      <h1>Titre</h1>\n      <p>Un <b>mot <i>clé</i></b></p>\n    </section>\n  </body>\n</html>",
+ o:["4","5","6","7"], a:2,
+ w:["Tu t'arrêtes à p.","Tu t'arrêtes à b.","html → body → section → p → b → i = 6.","Il n'y a pas de 7e niveau (le texte n'est pas un élément)."],
+ k:"Les éléments sont organisés en arbre ; sa représentation s'appelle le DOM.",
+ n:"On descend de parent en enfant jusqu'à la balise la plus imbriquée.",
+ z:"Un arbre généalogique : arrière-grand-parent, grand-parent, parent… jusqu'au plus petit."
+ ,v:{q:"Même question avec ce document.",
+  code:"<html>\n  <body>\n    <ul>\n      <li><a href=\"#\">x</a></li>\n    </ul>\n    <p>y</p>\n  </body>\n</html>",
+  o:["3","4","5","6"], a:2,
+  w:["Tu t'arrêtes à ul.","Tu t'arrêtes à li.","html → body → ul → li → a = 5.","Il n'y a pas d'élément sous a."],
+  k:"Les éléments forment un arbre : le DOM.",
+  n:"La branche la plus longue, c'est celle de la liste.",
+  z:"On suit la branche la plus longue jusqu'à la dernière feuille."}},
+
+{c:"html", s:"« Entités »",
+ h:"Pour qu'un &lt; ne soit pas pris pour le début d'une balise, il faut le déguiser.",
+ q:"Quel code affiche exactement le texte <code>&lt;br&gt;</code> à l'écran (le texte lui-même, pas un saut de ligne) ?",
+ o:["&lt;br&gt;","&amp;lt;br&amp;gt;","&lt;!-- br --&gt;","&amp;br;"], a:1,
+ w:["C'est une vraie balise : elle fait un saut de ligne.","&amp;lt; affiche &lt; et &amp;gt; affiche &gt;.","C'est un commentaire, rien n'est affiché.","&amp;br; n'est pas une entité."],
+ k:"&lt; et &gt; sont réservés à la déclaration des éléments : il faut utiliser &amp;lt;, &amp;gt;, &amp;amp;, &amp;nbsp;.",
+ n:"Une entité affiche un caractère réservé sans créer de balise.",
+ z:"&amp;lt; est le déguisement du « &lt; » pour qu'on ne le prenne pas pour une balise."
+ ,v:{q:"Qu'affiche ce code ?", code:"<p>1 &lt; 2 &amp;&amp; 3 &gt; 2</p>",
+  o:["1 &lt; 2 &amp;&amp; 3 &gt; 2","1 &amp;lt; 2 &amp;amp;&amp;amp; 3 &amp;gt; 2","1 2 3 2","Une erreur"], a:0,
+  w:["Chaque entité est remplacée par son caractère.","Le navigateur n'affiche pas les entités telles quelles.","Les caractères ne disparaissent pas.","C'est du HTML valide."],
+  k:"&amp;lt; = &lt;, &amp;gt; = &gt;, &amp;amp; = &amp;.",
+  n:"Le navigateur remplace chaque entité par son caractère.",
+  z:"Chaque déguisement est retiré au moment de l'affichage."}},
+
+{c:"html", m:true, s:"« Doctype », « head », « meta »",
+ h:"head contient les PROPRIÉTÉS du document ; le contenu visible va dans body.",
+ q:"Quelles balises ont leur place dans <code>&lt;head&gt;</code> ?",
+ o:["&lt;title&gt;","&lt;meta charset=\"UTF-8\"&gt;","&lt;h1&gt;",NONE], a:[0,1],
+ w:["title = titre du document.","meta = métadonnées, comme l'encodage.","h1 est un titre de section visible : il va dans body.","A et B sont correctes."],
+ k:"head contient les propriétés du document : title (le titre) et meta (les métadonnées, ex. charset, keywords, author).",
+ n:"head = infos sur la page ; body = ce qu'on voit.",
+ z:"head, c'est l'étiquette du cahier ; body, ce sont les pages."
+ ,v:{q:"Où doit se trouver <code>&lt;!DOCTYPE html&gt;</code> ?",
+  o:["Avant la balise &lt;html&gt;","Dans &lt;head&gt;","À la fin du document","Dans &lt;body&gt;"], a:0,
+  w:["Le doctype se déclare avant html.","Il est en dehors de html.","Il est tout au début.","Il ne fait pas partie du contenu."],
+  k:"Le doctype se déclare avant la balise html ; en HTML 5 : &lt;!DOCTYPE html&gt;.",
+  n:"Première ligne du fichier.",
+  z:"C'est la couverture du livre : avant toutes les pages."}},
+
+{c:"html", s:"« Liens »",
+ h:"Adresse de la page + # + id de la cible.",
+ q:"Quel code fait un lien vers la partie <code>id=\"tp\"</code> de la page <code>cours.html</code> du site <code>http://www.site.fr</code> ?",
+ o:["&lt;a href=\"http://www.site.fr/cours.html#tp\"&gt;","&lt;a href=\"http://www.site.fr/cours.html/tp\"&gt;","&lt;a id=\"http://www.site.fr/cours.html#tp\"&gt;","&lt;a href=\"#tp\"&gt;"], a:0,
+ w:["URL de la page + #tp.","/tp chercherait un fichier ou un dossier tp.","id crée une cible, pas un lien.","#tp seul vise la page actuelle, pas cours.html."],
+ k:"Lien externe : href=\"http://…\" ; cible : id=\"foo\" ; lien interne : href=\"#foo\" ; combinaison : href=\"http://www.bar.com/hello.html#foo\".",
+ n:"On peut viser un endroit précis d'une autre page avec #id.",
+ z:"« Livre Cours, page TP » au lieu de juste « page TP »."
+ ,v:{q:"Que fait <code>&lt;a id=\"fin\"&gt;Fin&lt;/a&gt;</code> ?",
+  o:["Il crée une cible qu'on peut atteindre avec href=\"#fin\"","Il crée un lien vers fin.html","Il crée un lien vers la fin de la page",NONE], a:0,
+  w:["id = une ancre, une cible.","Il n'a pas de href : ce n'est pas un lien.","Ce n'est pas un lien.","A est correcte."],
+  k:"&lt;a id=\"foo\"&gt; est une cible interne, atteinte par &lt;a href=\"#foo\"&gt;.",
+  n:"id = « je suis ici » ; href = « va là-bas ».",
+  z:"id, c'est le marque-page ; href, c'est le doigt qui pointe vers lui."}},
+
+{c:"html", m:true, s:"« Images », « Formats d'image »",
+ h:"Avec perte ou sans perte ? Bitmap ou vectoriel ?",
+ q:"Quelles affirmations sont vraies ?",
+ o:["Un JPEG utilise une compression avec perte","Un SVG est une image vectorielle","Un PNG perd de la qualité à chaque compression",NONE], a:[0,1],
+ w:["JPEG : bitmap avec perte.","SVG : format vectoriel.","PNG : compression sans perte.","A et B sont vraies."],
+ k:"PNG : bitmap sans perte ; GIF : sans perte, avec perte si palette réduite ; JPEG : bitmap avec perte ; SVG : vectoriel.",
+ n:"JPEG abîme un peu pour être léger, PNG non, SVG est un dessin redimensionnable.",
+ z:"SVG est une recette de dessin ; JPEG et PNG sont des mosaïques de petits carrés.",
+ v:{m:true, q:"Quelles affirmations sont vraies ?",
+  o:["L'attribut alt est lu par les clients non graphiques","Un GIF peut perdre en qualité si on réduit sa palette","L'attribut src contient le texte alternatif",NONE], a:[0,1],
+  w:["alt est lu par exemple par les lecteurs braille.","C'est écrit dans le cours.","src contient l'adresse de l'image.","A et B sont vraies."],
+  k:"Le texte de alt est lu par les clients non graphiques ; GIF est sans perte, sauf si la palette est réduite.",
+  n:"src = où est l'image ; alt = ce qu'elle montre.",
+  z:"alt, c'est la phrase qu'on lit à quelqu'un qui ne voit pas l'image."}},
+
+/* ================= 3. CSS ================= */
+{c:"css", m:true, s:"« Sélecteurs »",
+ h:"Le dernier élément écrit est celui qui est ciblé. « &gt; » = père direct.",
+ q:"Que veut dire le sélecteur <code>div &gt; span</code> ?",
+ o:["Les propriétés s'appliquent à un span dont le père est un div","Les propriétés s'appliquent à un div dont le père est un span","Les propriétés s'appliquent à un span qui est le frère d'un div",NONE], a:[0],
+ w:["« E1 &gt; E2 » = E2 dont le père est E1.","C'est l'inverse : on cible le span.","« &gt; » parle de parent, pas de frère.","A est correcte."],
+ k:"« E1 E2 » cible un E2 qui a un E1 comme ancêtre ; « E1 &gt; E2 » cible un E2 dont le père est E1.",
+ n:"On cible toujours le dernier élément écrit ; « &gt; » exige le parent direct.",
+ z:"« div &gt; span » = « les enfants span de maman div »."
+ ,v:{m:true, q:"Que cible le sélecteur <code>ul li.actif</code> ?",
+  o:["Les li de classe actif qui ont un ul comme ancêtre","Les li d'id actif dans un ul","Les ul de classe actif",NONE], a:[0],
+  w:["Espace = descendant ; .actif = la classe.","L'id s'écrit #actif.","La classe est sur li, pas sur ul.","A est correcte."],
+  k:"E.myclass = élément de classe myclass ; E#myid = élément d'id myid ; E1 E2 = descendant.",
+  n:". = classe, # = id, espace = descendant.",
+  z:"« Dans la famille ul, les enfants li qui portent le badge actif. »"}},
+
+{c:"css", m:true, s:"« Syntaxe », « Couleurs »",
+ h:"La propriété s'appelle-t-elle color ou text-color ? En RGB, l'ordre est rouge, vert, bleu.",
+ q:"Le document contient <code>&lt;b&gt;texte&lt;/b&gt;</code>. Quels codes CSS mettent ce texte en rouge ?",
+ o:["b { color: rgb(255, 0, 0); }","b { color: #FF0000; }","b { text-color: red; }",NONE], a:[0,1],
+ w:["R = 255, G = 0, B = 0 → rouge.","FF = 255 de rouge, 00 vert, 00 bleu.","text-color n'existe pas : la propriété est color.","A et B sont corrects."],
+ k:"Une couleur s'écrit avec un nom (red…), rgb(255, 255, 255), rgb(100%, 100%, 100%) ou #FFFFFF.",
+ n:"La propriété est color ; rgb et # suivent l'ordre rouge, vert, bleu.",
+ z:"On mélange trois pots de peinture : rouge à fond, vert et bleu à zéro."
+ ,v:{m:true, q:"Quels codes donnent un fond blanc aux éléments de classe box ?",
+  o:[".box { background-color: #FFFFFF; }",".box { background-color: rgb(100%, 100%, 100%); }",".box { background: white-color; }",NONE], a:[0,1],
+  w:["#FFFFFF = blanc.","Les trois couleurs à 100 % = blanc.","white-color n'est pas une couleur.","A et B sont corrects."],
+  k:"background-color définit la couleur de fond.",
+  n:"Toutes les couleurs à fond = blanc.",
+  z:"Toutes les lampes allumées à fond, ça fait du blanc."}},
+
+{c:"css", s:"« Cascade et héritage », « Identifiants et classes »",
+ h:"A est dans un p qui a sa propre règle. B est du texte directement dans le div.",
+ q:"De quelle couleur sont A et B ?",
+ code:"p     { color: green; }\n.info { color: red; }\n\n<div class=\"info\">\n  <p>A</p>\n  B\n</div>",
+ o:["A vert, B rouge","A rouge, B rouge","A vert, B noir","A rouge, B vert"], a:0,
+ w:["p a sa propre règle (vert) ; B est dans le div .info (rouge).","La règle p l'emporte sur l'héritage du div.","B est dans le div .info, donc rouge.","C'est l'inverse."],
+ k:"Un style appliqué à un élément est hérité par ses sous-éléments ; on applique les sélecteurs dans l'ordre, puis on propage.",
+ n:"Une règle propre à l'élément bat ce qu'il hérite.",
+ z:"Si la maîtresse te donne une consigne à toi, tu ne fais pas comme ta maman."
+ ,v:{q:"De quelle couleur est Z ?", code:"body { color: blue; }\nspan { color: orange; }\n\n<p>X <span>Y <b>Z</b></span></p>",
+  o:["Bleu","Orange","Noir","Un mélange des deux"], a:1,
+  w:["Le parent le plus proche qui a une couleur est span.","b n'a pas de règle : il hérite de span.","La couleur s'hérite.","Il n'y a pas de mélange : on prend le parent le plus proche."],
+  k:"Les styles sont propagés aux sous-éléments.",
+  n:"Sans règle, on prend la couleur de son parent direct.",
+  z:"Z demande à span, span répond « orange »."}},
+
+{c:"css", s:"« Modèle de boîte »",
+ h:"width = contenu seulement. Ajoute padding, border et margin, des DEUX côtés.",
+ q:"Quelle place horizontale totale occupe cette boîte ?",
+ code:".a {\n  width: 100px;\n  padding: 10px;\n  border: 1px solid black;\n  margin: 20px;\n}",
+ o:["100 px","122 px","142 px","162 px"], a:3,
+ w:["C'est seulement le contenu.","Contenu + padding + bordure, sans marge.","Tu ne comptes la marge que d'un côté.","100 + 2×10 + 2×1 + 2×20 = 162."],
+ k:"padding = espace entre le contenu et la bordure ; border = bordure ; margin = espace entre les boîtes. (width qui ne compte que le contenu, c'est le comportement par défaut du CSS.)",
+ n:"Total = contenu + 2 paddings + 2 bordures + 2 marges.",
+ z:"L'objet, le papier bulle, le carton, et la place autour sur l'étagère, à gauche ET à droite."
+ ,v:{q:"Quelle place horizontale totale ?", code:".b { width: 80px; padding: 0; border: 5px solid; margin: 15px; }",
+  o:["80 px","90 px","110 px","120 px"], a:3,
+  w:["Seulement le contenu.","Contenu + bordures.","Tu ne comptes la marge que d'un côté.","80 + 2×5 + 2×15 = 120."],
+  k:"De l'intérieur vers l'extérieur : padding, border, margin.",
+  n:"On additionne chaque couche des deux côtés.",
+  z:"Même calcul, sans papier bulle."}},
+
+{c:"css", s:"« Flottants », « Float et alignement vertical »",
+ h:"clear: left ne s'occupe que des flottants à gauche.",
+ q:"Deux div ont <code>float: left</code> et <code>float: right</code>. Comment mettre un texte de classe <code>foo</code> en dessous des deux ?",
+ o:[".foo { clear: left; }",".foo { clear: both; }",".foo { float: none; }",".foo { vertical-align: bottom; }"], a:1,
+ w:["Il resterait à côté du flottant de droite.","both = ni flottant à gauche ni à droite à côté : il passe dessous.","float: none ne fait que dire que .foo ne flotte pas lui-même.","vertical-align ne gère pas les flottants."],
+ k:"float: left | right fait flotter la boîte et le texte passe autour ; clear arrête l'effet de flottement (ex. clear: both).",
+ n:"clear: both place l'élément sous tous les flottants.",
+ z:"Deux bateaux flottent à gauche et à droite ; clear: both, c'est le quai en dessous."
+ ,v:{m:true, q:"Quelles affirmations sur float sont vraies ?",
+  o:["Le texte passe autour d'une boîte flottante","vertical-align n'a pas d'effet sur une boîte flottante","float: center centre la boîte",NONE], a:[0,1],
+  w:["C'est le principe de float.","C'est dans le cours (exemple box-vertical.html).","float accepte left ou right, pas center.","A et B sont vraies."],
+  k:"Une boîte flottante ne supporte pas vertical-align ; float: left | right.",
+  n:"float = à gauche ou à droite, le texte coule autour.",
+  z:"Une île au bord de la rivière : l'eau (le texte) passe autour."}},
+
+{c:"css", s:"« Positionnement »",
+ h:"absolute se place par rapport au parent marqué relative.",
+ q:"Où s'affiche <code>.enfant</code> ?",
+ code:".parent { position: relative; }\n.enfant { position: absolute; top: 0; right: 0; }\n\n<div class=\"parent\">\n  <div class=\"enfant\">X</div>\n</div>",
+ o:["Dans le coin haut-droit de .parent","Dans le coin haut-droit de la fenêtre, même quand on défile","À sa place normale","Décalé de 0 px, donc à sa place normale"], a:0,
+ w:["absolute + parent en relative → coin du parent.","Ça, c'est fixed.","static (par défaut) le laisserait à sa place.","« Décalé par rapport à sa place », c'est relative, pas absolute."],
+ k:"static : normal ; fixed : coin supérieur gauche de la fenêtre ; relative : position habituelle ; absolute : boîte parente marquée relative.",
+ n:"absolute se colle aux bords du parent en relative.",
+ z:"L'autocollant se colle dans le coin du cadre « relative »."
+ ,v:{q:"Que fait <code>.x { position: relative; left: -20px; }</code> ?",
+  o:["Décale .x de 20 px vers la gauche par rapport à sa position habituelle","Place .x à 20 px du bord gauche de la fenêtre","Erreur : les valeurs négatives sont interdites","Aucun effet"], a:0,
+  w:["relative = par rapport à sa place normale ; −20 px de left le pousse à gauche.","Ce serait fixed (et sans le signe moins).","Le cours dit que les valeurs peuvent être négatives.","Le décalage a bien lieu."],
+  k:"Les valeurs de left, top, right, bottom peuvent être négatives ; relative = par rapport à la position habituelle.",
+  n:"relative décale l'élément depuis sa place normale.",
+  z:"Tu restes à ta chaise, mais tu te penches de 20 cm vers la gauche."}},
+
+{c:"css", s:"« Unités », « Propriétés de police », « Propriétés des textes »",
+ h:"em = taille de la fonte du parent. Fais les calculs étape par étape.",
+ q:"Avec la police par défaut, quelle taille fait le texte de <code>.u</code> ?",
+ code:".t   { font-size: 2em; }\n.t .u { font-size: 0.75em; }\n\n<div class=\"t\">A <span class=\"u\">B</span></div>",
+ o:["12 px","16 px","24 px","32 px"], a:2,
+ w:["0.75 × 16 : tu oublies que .t a doublé.","C'est la taille par défaut.","16 × 2 = 32 pour .t, puis 32 × 0.75 = 24.","C'est la taille de .t."],
+ k:"em est proportionnel à la fonte courante (16 px avec la fonte par défaut).",
+ n:"Les em se multiplient de parent en enfant.",
+ z:"Le doudou fait les trois quarts de SA poupée, et la poupée est deux fois plus grande que la normale.",
+ v:{q:"Quel est le retrait de début de paragraphe ?", code:"p { font-size: 20px; text-indent: 2em; }",
+  o:["2 px","32 px","40 px","20 px"], a:2,
+  w:["em n'est pas un pixel.","2 × 16 : mais la fonte de p est de 20 px.","2 × 20 = 40 px.","C'est 1em."],
+  k:"text-indent = retrait en début de paragraphe ; em est proportionnel à la fonte courante.",
+  n:"1em = la taille du texte de l'élément lui-même.",
+  z:"Le retrait fait la largeur de deux lettres de ce paragraphe."}},
+
+/* ================= 4. JAVASCRIPT ================= */
+{c:"js", s:"« Opérateurs arithmétiques », « Flottants »",
+ h:"En JavaScript, tous les nombres sont des flottants : il n'y a pas de division entière.",
+ q:"Qu'affiche le code suivant ?",
+ code:"let a = 7;\nlet b = 2;\nconsole.log(a / b, a % b);",
+ o:["3 1","3.5 1","3.5 0.5","Une erreur"], a:1,
+ w:["Il n'y a pas de division entière en JS.","7 / 2 = 3.5 ; reste de 7 par 2 = 1.","% donne le reste entier : 7 = 3×2 + 1.","Le code est valide."],
+ k:"+, -, *, /, % s'appliquent aux nombres ; les nombres sont toujours des flottants.",
+ n:"/ divise vraiment ; % donne le reste.",
+ z:"7 bonbons pour 2 enfants : 3,5 chacun si on coupe, ou 3 chacun et 1 qui reste."
+ ,v:{q:"Qu'affiche le code suivant ?", code:"console.log(10 / 4, 10 % 4, -3 / 0);",
+  o:["2.5 2 -Infinity","2 2 Erreur","2.5 2.5 NaN","2 0.5 0"], a:0,
+  w:["Division flottante, reste 2, et diviser par 0 ne lève pas d'erreur.","Il n'y a ni division entière ni erreur.","Le reste est entier ; −3/0 donne −Infinity, pas NaN (NaN, c'est 0/0).","Faux sur tous les points."],
+  k:"La division ne lève pas d'erreur ; 0/0 donne NaN.",
+  n:"Diviser par 0 donne l'infini (avec un signe), sauf 0/0 qui donne NaN.",
+  z:"Partager 3 bonbons entre 0 enfant, ça ne veut rien dire : JS répond « l'infini »."}},
+
+{c:"js", s:"« Variables » (non déclarée, non initialisée, redéclaration)",
+ h:"Déclarée sans valeur, ou jamais déclarée : ce n'est pas la même chose.",
+ q:"Qu'affiche le code suivant ?",
+ code:"let a;\nconsole.log(a);\nconsole.log(b);",
+ o:["undefined puis undefined","undefined puis une erreur indiquant que b n'est pas définie","Une erreur dès la première ligne","Rien"], a:1,
+ w:["b n'a jamais été déclarée : c'est une erreur.","a est déclarée sans valeur → undefined ; b n'existe pas → erreur. (Attention : certains éditeurs, comme RunJS, n'affichent que l'erreur et cachent ce qui a été affiché avant. Dans la console du navigateur (F12) ou avec node, on voit bien les deux.)","a est bien déclarée.","La première ligne affiche quelque chose."],
+ k:"Une variable déclarée mais non initialisée vaut undefined ; utiliser une variable non déclarée fait échouer le programme.",
+ n:"Déclarée sans valeur = undefined ; non déclarée = erreur.",
+ z:"Une boîte vide avec une étiquette = undefined ; une boîte qui n'existe pas = erreur."
+ ,v:{q:"Qu'affiche le code suivant ?", code:"let x = 1;\nlet x = 2;\nconsole.log(x);",
+  o:["2","1","Une erreur","undefined"], a:2,
+  w:["On ne peut pas redéclarer avec let.","Le programme ne démarre même pas.","Redéclarer le même let est interdit.","Ce n'est pas undefined, c'est une erreur."],
+  k:"Déclarer deux fois le même let x n'est pas autorisé.",
+  n:"Un nom ne peut être déclaré qu'une fois avec let.",
+  z:"On ne peut pas avoir deux boîtes avec exactement la même étiquette."}},
+
+{c:"js", m:true, s:"« Opérateurs d'égalité », « Flottants »",
+ h:"== convertit les types, === non. Et les flottants ne sont pas exacts.",
+ q:"Lesquelles de ces expressions valent <code>true</code> ?",
+ o:["5 == \"5\"","5 === \"5\"","0.1 + 0.2 == 0.3",NONE], a:[0],
+ w:["== convertit \"5\" en 5.","=== vérifie aussi le type : number ≠ string.","0.1 + 0.2 = 0.30000000000000004.","A vaut true."],
+ k:"== et != comparent tous les types (de façon surprenante) ; === et !== vérifient aussi le type ; 0.1 + 0.2 == 0.3 est faux.",
+ n:"== convertit, === compare aussi le type ; ne jamais comparer des flottants avec ==.",
+ z:"== regarde si ça se ressemble ; === regarde si c'est exactement le même objet ET le même genre.",
+ v:{m:true, q:"Lesquelles de ces expressions valent <code>true</code> ?",
+  o:["\"a\" != \"a\"","4 !== \"4\"","NaN == NaN",NONE], a:[1],
+  w:["Les deux chaînes sont égales, donc != est faux.","Types différents → !== est vrai.","NaN n'est jamais égal à lui-même.","B vaut true."],
+  k:"NaN n'est pas égal à lui-même ; !== vérifie le type.",
+  n:"!== est vrai dès que le type OU la valeur diffère.",
+  z:"NaN est un fantôme : il ne se reconnaît pas dans le miroir."}},
+
+{c:"js", s:"« Concaténation » (javascript.html) + « Arithmétique sur types mélangés » (js-scope.html)",
+ h:"De gauche à droite. + colle dès qu'il voit une chaîne ; - calcule toujours.",
+ q:"Qu'affiche le code suivant ?",
+ code:"console.log(\"1\" + 1 + 1, 1 + 1 + \"1\", \"3\" - 1);",
+ o:["111 21 2","3 3 2","111 21 31","12 21 2"], a:0,
+ w:["\"1\"+1 = \"11\", puis + 1 = \"111\" ; 1+1 = 2, puis + \"1\" = \"21\" ; \"3\" − 1 = 2.","+ colle dès qu'il y a une chaîne.","- ne colle pas : \"3\" − 1 = 2.","\"11\" + 1 colle : \"111\"."],
+ k:"+ concatène si l'un des opérandes est une chaîne ; le cours cite \"foo\" - 1 parmi les résultats surprenants.",
+ n:"On calcule de gauche à droite : dès qu'une chaîne apparaît, + colle.",
+ z:"Le colleur colle les étiquettes ; la calculatrice (-) transforme tout en nombre."
+ ,v:{q:"Qu'affiche le code suivant ?", code:"console.log(true + \"x\", 2 + 3 + \"px\", \"10\" - \"4\");",
+  o:["truex 5px 6","1x 23px 6","truex 23px 104","Une erreur"], a:0,
+  w:["true + \"x\" colle ; 2 + 3 = 5 avant \"px\" ; - convertit les deux.","true collé à une chaîne donne \"true\".","2 + 3 se calcule d'abord ; - ne colle pas.","C'est valide."],
+  k:"'hello' + true donne hellotrue.",
+  n:"Les nombres s'additionnent tant qu'aucune chaîne n'est arrivée.",
+  z:"D'abord on compte les bonbons (5), ensuite on colle l'étiquette « px »."}},
+
+{c:"js", s:"« Évaluation paresseuse », « Opérateurs booléens »",
+ h:"Si la gauche de &amp;&amp; est fausse, la droite n'est même pas exécutée.",
+ q:"Qu'affiche le code suivant ?",
+ code:"let n = 0;\nlet ok = n > 0 && (n = 10);\nconsole.log(ok, n);",
+ o:["false 0","10 10","true 10","false 10"], a:0,
+ w:["0 &gt; 0 est faux → &amp;&amp; s'arrête : ok = false, et n = 10 ne s'exécute jamais.","La droite n'est pas évaluée.","La condition est fausse.","n = 10 n'a pas été exécuté."],
+ k:"Si la partie gauche de &amp;&amp; est fausse, la partie droite n'est pas évaluée ; si la gauche de || est vraie, non plus.",
+ n:"&amp;&amp; s'arrête au premier faux, || au premier vrai.",
+ z:"« Si tu as fini tes devoirs ET… » : pas fini ? on ne lit même pas la suite.",
+ v:{q:"Qu'affiche le code suivant ?", code:"let m;\nlet r = true || (m = 5);\nconsole.log(r, m);",
+  o:["true undefined","5 5","true 5","undefined 5"], a:0,
+  w:["La gauche de || est vraie → la droite n'est pas exécutée, et m reste undefined.","m = 5 n'est jamais exécuté.","m n'a pas reçu 5.","r vaut true."],
+  k:"Exemple du cours : console.log(c || (d = false)) affiche true, et d reste undefined.",
+  n:"|| s'arrête dès la première valeur vraie.",
+  z:"Tu as déjà un oui : pas besoin de demander au deuxième."}},
+
+{c:"js", s:"« for », « Incrémentation et affectation composée », « Concaténation »",
+ h:"s est une chaîne : + colle. Et de combien i avance-t-il à chaque tour ?",
+ q:"Qu'affiche le code suivant ?",
+ code:"let s = \"\";\nfor (let i = 1; i <= 5; i += 2) {\n  s = s + i;\n}\nconsole.log(s);",
+ o:["135","9","12345","1 3 5"], a:0,
+ w:["i vaut 1, 3, 5 ; s est une chaîne donc on colle : \"135\".","Ce serait le cas si s était le nombre 0.","i += 2 saute les pairs.","On colle sans espace."],
+ k:"i += 2 signifie i = i + 2 ; + concatène quand un opérande est une chaîne.",
+ n:"i += 2 avance de deux en deux, et coller à une chaîne ne fait pas d'addition.",
+ z:"On saute une case sur deux et on accroche chaque numéro au bout du train.",
+ v:{q:"Qu'affiche le code suivant ?", code:"let t = 0;\nfor (let i = 3; i > 0; i--) {\n  t += i;\n}\nconsole.log(t, typeof t);",
+  o:["6 number","321 string","6 string","3 number"], a:0,
+  w:["t est un nombre : 3 + 2 + 1 = 6.","t part de 0 (un nombre), pas de \"\".","Nombre + nombre = number.","On fait 3 tours."],
+  k:"typeof donne le type ; i-- signifie i = i - 1.",
+  n:"Si on part d'un nombre et qu'on ajoute des nombres, on reste un nombre.",
+  z:"Cette fois on compte les bonbons au lieu d'accrocher des wagons."}},
+
+{c:"js", s:"« Pré- et post-incrémentation »",
+ h:"i++ renvoie l'ancienne valeur, ++i la nouvelle. Fais-le dans l'ordre, de gauche à droite.",
+ q:"Qu'affiche le code suivant ?",
+ code:"let i = 5;\nlet j = i++ + ++i;\nconsole.log(i, j);",
+ o:["7 12","7 11","6 11","7 13"], a:0,
+ w:["i++ donne 5 (i = 6), puis ++i fait i = 7 et donne 7 → j = 12.","Ce serait 5 + 6 : mais ++i donne 7.","i a été augmenté deux fois.","Ce serait 6 + 7."],
+ k:"i++ renvoie la valeur courante puis modifie i ; ++i modifie i puis renvoie la nouvelle valeur.",
+ n:"Post = je donne puis j'augmente ; pré = j'augmente puis je donne.",
+ z:"i++ : tu montres ton ticket, puis tu avances ; ++i : tu avances, puis tu montres ton ticket."
+ ,v:{q:"Qu'affiche le code suivant ?", code:"let k = 2;\nlet m = k-- * 3;\nconsole.log(k, m);",
+  o:["1 6","1 3","2 6","1 9"], a:0,
+  w:["k-- donne 2 (puis k = 1), donc m = 2 × 3 = 6.","k-- donne l'ancienne valeur, 2.","k a bien diminué.","Aucun calcul ne donne 9."],
+  k:"i-- renvoie la valeur courante, puis la diminue.",
+  n:"k-- utilise 2, puis k devient 1.",
+  z:"Tu montres « 2 » sur ton ticket, puis tu recules d'une case."}},
+
+{c:"js", s:"« Opérateur ternaire », « Égalité »",
+ h:"Un ternaire dans un ternaire : lis de gauche à droite, comme des if/else en cascade.",
+ q:"Qu'affiche le code suivant ?",
+ code:"let age = 17;\nlet msg = age >= 18 ? \"majeur\" : age >= 16 ? \"presque\" : \"mineur\";\nconsole.log(msg);",
+ o:["majeur","presque","mineur","Une erreur"], a:1,
+ w:["17 &gt;= 18 est faux.","Faux pour 18, puis vrai pour 16 → \"presque\".","On s'arrête avant, car 17 &gt;= 16.","On peut enchaîner des ternaires."],
+ k:"L'opérateur ternaire ?: est un if en ligne qui renvoie une valeur.",
+ n:"C'est un if / else if / else écrit sur une ligne.",
+ z:"Deux portes : « 18 ans ? » non → « 16 ans ? » oui → presque.",
+ v:{q:"Qu'affiche le code suivant ?", code:"let x = 0;\nconsole.log(x ? \"oui\" : \"non\", x == false ? \"A\" : \"B\");",
+  o:["non A","oui A","non B","oui B"], a:0,
+  w:["0 compte comme faux → \"non\" ; 0 == false est vrai (== convertit) → \"A\".","0 est considéré comme faux.","0 == false est vrai.","Faux sur les deux points."],
+  k:"Le ternaire choisit selon la condition ; == convertit les types.",
+  n:"0 se comporte comme false dans une condition.",
+  z:"Zéro bonbon, c'est comme pas de bonbon : « non »."}},
+
+/* ================= 5. FONCTIONS ================= */
+{c:"fn", s:"« Closures » (js-function.html) + « Closures et mutation » (js-scope.html)",
+ h:"La fonction lit la variable au moment où on l'APPELLE, pas au moment où on la crée.",
+ q:"Qu'affiche le code suivant ?",
+ code:"let a = 1;\nconst f = () => a * 10;\na = 2;\nconsole.log(f());",
+ o:["10","20","Une erreur","La fonction f"], a:1,
+ w:["f ne garde pas la valeur 1 : elle lit a au moment de l'appel.","Au moment de f(), a vaut 2 → 20.","a est accessible depuis f.","On appelle f, donc on affiche son résultat."],
+ k:"Une fonction qui utilise des variables de son contexte s'appelle une closure.",
+ n:"Une closure regarde la variable elle-même, pas une copie.",
+ z:"La fonction regarde par la fenêtre au moment où on lui pose la question.",
+ v:{q:"Qu'affiche le code suivant ?", code:"let msg = \"hello\";\nfunction show() {\n  return msg + \" !\";\n}\nmsg = \"bye\";\nconsole.log(show());",
+  o:["bye !","hello !","Une erreur","undefined !"], a:0,
+  w:["msg vaut \"bye\" au moment de l'appel.","msg a changé avant l'appel.","msg est accessible.","msg a une valeur."],
+  k:"Une fonction peut accéder aux variables de son contexte.",
+  n:"La fonction lit la valeur actuelle de msg.",
+  z:"Elle lit le tableau au moment de l'appel : on y a déjà écrit « bye »."}},
+
+{c:"fn", s:"« Valeur de retour », « Fonctions fléchées », « Paramètres et arguments »",
+ h:"Le calcul est fait, mais est-il RENVOYÉ ?",
+ q:"Qu'affiche le code suivant ?",
+ code:"function double(x) {\n  x * 2;\n}\nconsole.log(double(4));",
+ o:["8","undefined","Rien","Une erreur"], a:1,
+ w:["Il n'y a pas de return.","Sans return, le résultat est undefined.","console.log affiche quelque chose : undefined.","Le code est valide."],
+ k:"Sans return, le résultat est undefined (exemple addOne du cours).",
+ n:"Pas de return = la fonction renvoie undefined.",
+ z:"Le cuisinier fait le gâteau, mais ne te le donne pas."
+ ,v:{q:"Qu'affiche le code suivant ?", code:"const triple = x => { return x * 3 };\nconsole.log(triple(2), triple());",
+  o:["6 NaN","6 0","6 undefined","Une erreur"], a:0,
+  w:["triple(2) = 6 ; sans argument, x = undefined, et undefined × 3 = NaN.","undefined n'est pas 0.","Le calcul est fait : undefined × 3 donne NaN.","Il n'y a pas d'erreur."],
+  k:"Un argument manquant vaut undefined.",
+  n:"Calculer avec undefined donne NaN.",
+  z:"Tripler « rien », ça ne donne pas un nombre."}},
+
+{c:"fn", m:true, s:"« Paramètres et arguments »",
+ h:"JavaScript ne vérifie jamais le nombre d'arguments.",
+ q:"On a <code>function f(a, b) { console.log(a, b); }</code>. Quelles affirmations sont vraies ?",
+ o:["f(1) affiche 1 undefined","f(1, 2, 3) provoque une erreur","f() affiche undefined undefined",NONE], a:[0,2],
+ w:["b manque → undefined.","L'argument en trop est ignoré.","a et b manquent → undefined.","A et C sont vraies."],
+ k:"Les arguments en trop sont ignorés, les arguments manquants valent undefined.",
+ n:"Trop d'arguments : ignorés ; pas assez : undefined.",
+ z:"Deux mains : un 3e bonbon tombe, une main vide tient « rien ».",
+ v:{m:true, q:"On a <code>function g(x) { return x + 1; }</code>. Quelles affirmations sont vraies ?",
+  o:["g() renvoie NaN","g(1, 2) renvoie 2","g(\"1\") renvoie 2",NONE], a:[0,1],
+  w:["undefined + 1 = NaN.","2 est ignoré, 1 + 1 = 2.","\"1\" + 1 colle : \"11\".","A et B sont vraies."],
+  k:"Arguments manquants = undefined ; + concatène avec une chaîne.",
+  n:"Attention au type de ce qu'on passe à la fonction.",
+  z:"Si tu donnes une étiquette « 1 » au lieu d'un bonbon, + colle au lieu de compter."}},
+
+{c:"fn", s:"« Fonctions fléchées » (syntaxe)",
+ h:"Regarde bien la flèche.",
+ q:"Qu'affiche le code suivant ?",
+ code:"let carre = x -> x * x;\nconsole.log(carre(3));",
+ o:["9","6","Une erreur de syntaxe","undefined"], a:2,
+ w:["Il faudrait =&gt;, pas -&gt;.","Aucun calcul n'a lieu.","-&gt; n'existe pas en JavaScript : le programme ne démarre pas.","Le code ne s'exécute pas."],
+ k:"Syntaxe d'une fonction fléchée : (args) =&gt; expression, ou argument =&gt; expression.",
+ n:"En JS, la flèche s'écrit =&gt;.",
+ z:"Une flèche en JS a un signe égal comme corps : =&gt;."
+ ,v:{q:"Qu'affiche le code suivant ?", code:"let add = (a, b) => a + b;\nconsole.log(add(2)(3));",
+  o:["5","NaN","Une erreur car add(2) n'est pas une fonction","23"], a:2,
+  w:["add attend ses deux arguments en un seul appel.","add(2) vaut bien NaN, mais ensuite on essaie de l'appeler avec (3).","add(2) = 2 + undefined = NaN, et NaN(3) échoue : ce n'est pas une fonction.","Aucune concaténation."],
+  k:"() peut s'appliquer à n'importe quelle valeur, mais ne marche que sur une fonction (let c = 3; c(40, 7) échoue).",
+  n:"On ne peut appeler avec () que des fonctions.",
+  z:"On ne peut pas appuyer sur le bouton d'un objet qui n'est pas une machine."}},
+
+{c:"fn", s:"« Fonctions comme valeurs », « Types de base » (javascript.html)",
+ h:"salut est la fonction elle-même ; salut() est ce qu'elle renvoie.",
+ q:"Qu'affiche le code suivant ?",
+ code:"function salut() {\n  return \"salut\";\n}\nconsole.log(typeof salut, typeof salut());",
+ o:["function string","string string","function function","undefined string"], a:0,
+ w:["salut = une fonction ; salut() = la chaîne \"salut\".","Sans (), on ne l'appelle pas : c'est la fonction.","salut() renvoie une chaîne.","salut existe bien."],
+ k:"Une déclaration de fonction crée une variable du même nom ; les fonctions sont un type à part.",
+ n:"Sans parenthèses = la fonction ; avec = son résultat.",
+ z:"salut, c'est la machine ; salut(), c'est le gâteau qu'elle fabrique.",
+ v:{q:"Qu'affiche le code suivant ?", code:"const apply = (f, v) => f(v);\nconsole.log(apply(Math.abs, -4), apply(x => x + \"!\", 2));",
+  o:["4 2!","-4 2!","4 3","Une erreur"], a:0,
+  w:["Math.abs(−4) = 4 ; 2 + \"!\" = \"2!\".","abs enlève le signe.","+ \"!\" colle.","Math.abs est une fonction, on peut la passer en argument."],
+  k:"Une fonction peut être passée en argument ; Math.abs(−7) = 7.",
+  n:"On peut donner une fonction à une autre fonction.",
+  z:"On donne une machine à une autre machine, qui l'utilise."}},
+
+{c:"fn", s:"« Fonctions qui renvoient des fonctions », « Closures »",
+ h:"multiplier(n) renvoie une fonction qui retient n.",
+ q:"Qu'affiche le code suivant ?",
+ code:"function multiplier(n) {\n  return x => x * n;\n}\nconst fois3 = multiplier(3);\nconsole.log(fois3(5), multiplier(2)(multiplier(2)(1)));",
+ o:["15 4","15 2","8 4","Une erreur"], a:0,
+ w:["5 × 3 = 15 ; (1 × 2) × 2 = 4.","On double deux fois : 4.","fois3 multiplie, il n'additionne pas.","C'est valide."],
+ k:"Une fonction peut renvoyer une fonction ; une fonction interne garde accès aux variables de la fonction externe.",
+ n:"Chaque fonction renvoyée retient son propre n.",
+ z:"Une usine fabrique des machines « ×3 » ou « ×2 », chacune avec son réglage.",
+ v:{q:"Qu'affiche le code suivant ?", code:"function choix(b) {\n  return b ? (x => x + 1) : (x => x - 1);\n}\nconsole.log(choix(true)(10), choix(false)(choix(true)(0)));",
+  o:["11 0","11 1","9 0","Une erreur"], a:0,
+  w:["10 + 1 = 11 ; 0 + 1 = 1, puis 1 − 1 = 0.","On retire ensuite 1.","true → la fonction +1.","C'est valide."],
+  k:"Exemple du cours : print(allowPrinting) renvoie une fonction différente selon le booléen.",
+  n:"Le booléen choisit QUELLE fonction est renvoyée.",
+  z:"L'interrupteur choisit si on te donne la machine qui monte ou celle qui descend."}},
+
+{c:"fn", m:true, s:"« L'objet Math », « Math.random() », « Conversion chaîne ↔ nombre »",
+ h:"Math.random() est dans [0, 1[ : 1 est exclu. Et un dé, c'est de 1 à 6.",
+ q:"Lesquelles de ces expressions renvoient un entier entre 1 et 6 inclus (un dé) ?",
+ o:["Math.floor(Math.random() * 6) + 1","Math.floor(Math.random() * 7)","Math.random() * 6 + 1",NONE], a:[0],
+ w:["0–5, puis +1 → 1–6.","0–6 : 0 est possible.","Ça donne un réel, pas un entier.","A est correcte."],
+ k:"Math.random() renvoie un nombre dans [0, 1) ; Math.floor(Math.random() * 10) donne un entier de 0 à 9.",
+ n:"floor(random × N) donne 0 à N−1 ; on ajoute le minimum.",
+ z:"La roue a 6 cases numérotées 0 à 5 ; on ajoute 1 pour avoir un dé.",
+ v:{m:true, q:"Lesquelles de ces expressions valent 3 ?",
+  o:["Math.floor(3.9)","parseInt(\"3.7\")","Math.max(1, 2)",NONE], a:[0,1],
+  w:["floor arrondit vers le bas.","parseInt s'arrête au point.","max(1, 2) = 2.","A et B valent 3."],
+  k:"Math.floor(3.6) → 3 ; parseInt convertit une chaîne en nombre entier.",
+  n:"floor et parseInt coupent les décimales (pour un nombre positif).",
+  z:"On coupe la partie après la virgule, comme on coupe la croûte du pain."}},
+
+/* ================= 6. SCOPE & BIZARRERIES ================= */
+{c:"scope", s:"« Le problème de var », « Variables » (non déclarée)",
+ h:"var ignore les accolades du if, mais s'arrête à la fonction.",
+ q:"Qu'affiche le code suivant ?",
+ code:"function init() {\n  if (true) {\n    var a = 3;\n  }\n  console.log(a);\n}\ninit();\nconsole.log(a);",
+ o:["3 puis 3","3 puis une erreur indiquant que a n'est pas définie","Une erreur dès le premier console.log","undefined puis undefined"], a:1,
+ w:["En dehors de la fonction, a n'existe pas.","var traverse le if, donc le 1er console.log affiche 3 ; mais a reste dans init, donc le 2e plante. (Attention : certains éditeurs, comme RunJS, n'affichent que l'erreur et cachent ce qui a été affiché avant. Dans la console du navigateur (F12) ou avec node, on voit bien les deux.)","var ignore les accolades du if.","a vaut bien 3 dans init."],
+ k:"Un var ignore les accolades : il a la portée de la fonction, pas du bloc.",
+ n:"var est visible dans toute sa fonction, mais pas au-delà.",
+ z:"var peut se promener dans toutes les pièces de la maison, mais il ne sort pas dans la rue.",
+ v:{q:"Qu'affiche le code suivant ?", code:"function test() {\n  if (true) {\n    let b = 1;\n  }\n  console.log(b);\n}\ntest();",
+  o:["1","undefined","Une erreur indiquant que b n'est pas définie","Rien"], a:2,
+  w:["let reste dans le bloc du if.","b n'existe plus, ce n'est pas undefined.","let meurt à l'accolade fermante du if.","Il y a une erreur."],
+  k:"let et const ont été introduits parce que var n'est pas scopé correctement ; un let meurt à l'accolade fermante.",
+  n:"let ne sort pas de son bloc { }.",
+  z:"let reste dans sa pièce : il ne va pas dans le couloir."}},
+
+{c:"scope", s:"« var placé en début de fonction », « Utilisation avant déclaration »",
+ h:"La déclaration var remonte, mais pas la valeur.",
+ q:"Qu'affiche le code suivant ?",
+ code:"console.log(x);\nvar x = 5;\nconsole.log(x);",
+ o:["undefined puis 5","5 puis 5","Une erreur indiquant que x n'est pas définie","Rien puis 5"], a:0,
+ w:["var x remonte (sans valeur) → undefined ; ensuite x vaut 5.","La valeur n'est pas encore donnée à la ligne 1.","Avec var, c'est autorisé.","console.log affiche undefined."],
+ k:"Les déclarations var sont placées au début ; console.log(a); var a = 3; est autorisé.",
+ n:"var x remonte en haut, mais = 5 reste à sa place.",
+ z:"Le nom est sur la liste dès le début, mais l'élève arrive plus tard.",
+ v:{q:"Qu'affiche le code suivant ?", code:"console.log(y);\nlet y = 5;",
+  o:["undefined","5","Une erreur","Rien"], a:2,
+  w:["Avec let, on ne peut pas utiliser la variable avant sa déclaration.","La valeur n'est pas encore donnée.","let ne « remonte » pas utilisable comme var : erreur.","Il y a une erreur."],
+  k:"C'est var qui est placé en début de fonction ; let corrige ce comportement. (Le message exact de l'erreur n'est pas dans le cours.)",
+  n:"Avec let, il faut déclarer avant d'utiliser.",
+  z:"Avec let, l'élève n'est pas sur la liste tant qu'il n'est pas arrivé."}},
+
+{c:"scope", m:true, s:"« const »",
+ h:"Une const ne s'initialise qu'une seule fois.",
+ q:"On a <code>const total = 0; total = total + 1; console.log(total);</code>. Quelles affirmations sont vraies ?",
+ o:["Le code affiche 1","Le code provoque une erreur, car une const ne peut être affectée qu'une fois","Le code affiche 0",NONE], a:[1],
+ w:["La réaffectation échoue.","On ne peut pas réaffecter une const.","L'erreur arrive avant le console.log.","B est vraie."],
+ k:"const marque une variable qui ne peut être initialisée qu'une seule fois, et elle doit l'être à la déclaration.",
+ n:"const = valeur fixée une fois pour toutes.",
+ z:"Une boîte scellée : on met le jouet dedans une fois, et on ne peut plus le changer.",
+ v:{m:true, q:"Quelles affirmations sont vraies ?",
+  o:["const x; (sans valeur) est une erreur","const a la portée du bloc, comme let","On peut écrire const x = 1; x++;",NONE], a:[0,1],
+  w:["Une const doit être initialisée à la déclaration.","const et let ont été introduits ensemble pour remplacer var (portée de bloc).","x++ est une réaffectation : erreur.","A et B sont vraies."],
+  k:"Une const doit être initialisée lors de sa déclaration.",
+  n:"const : une valeur dès le départ, et plus jamais changée.",
+  z:"On ne peut pas sceller une boîte vide, ni la rouvrir après."}},
+
+{c:"scope", s:"« Variables globales », « Closures et mutation »",
+ h:"Sans let, const ni var, la variable devient… globale.",
+ q:"Qu'affiche le code suivant ?",
+ code:"function f() { compteur = 1; }\nfunction g() { compteur++; }\nf();\ng();\ng();\nconsole.log(compteur);",
+ o:["3","1","Une erreur indiquant que compteur n'est pas définie","undefined"], a:0,
+ w:["compteur est globale : 1, puis 2, puis 3.","g l'incrémente deux fois.","f a créé compteur comme variable globale.","compteur a une valeur."],
+ k:"Affecter une variable sans let, const ni var crée une variable globale.",
+ n:"Pas de mot-clé = variable visible partout (à éviter).",
+ z:"Un jouet laissé dans le salon : tout le monde peut jouer avec.",
+ v:{q:"Qu'affiche le code suivant ?", code:"function f() {\n  var c = 1;\n}\nf();\nconsole.log(typeof c);",
+  o:["undefined","number","Une erreur","1"], a:0,
+  w:["c est locale à f ; typeof d'une variable inconnue donne \"undefined\".","c n'est pas visible dehors.","typeof ne plante pas sur une variable inconnue.","c est rangée dans f."],
+  k:"Une variable var a la portée de la fonction.",
+  n:"Déclarée avec var dans f, elle reste dans f.",
+  z:"Ce jouet est rangé dans la chambre de f."}},
+
+{c:"scope", s:"« IIFE »",
+ h:"La fonction est appelée tout de suite, et ses variables restent à l'intérieur.",
+ q:"Qu'affiche le code suivant ?",
+ code:"(function () {\n  var x = 10;\n  console.log(x);\n})();\nconsole.log(typeof x);",
+ o:["10 puis undefined","10 puis number","Rien puis undefined","Une erreur de syntaxe"], a:0,
+ w:["L'IIFE affiche 10, puis x n'est pas visible dehors.","x est caché dans l'IIFE.","L'IIFE est bien appelée (les () à la fin).","Les parenthèses autour rendent la syntaxe valide."],
+ k:"On entoure une fonction anonyme de ( ) et on l'appelle tout de suite : c'est une IIFE ; ses variables ne sont plus visibles dehors.",
+ n:"Une IIFE s'exécute tout de suite et garde ses variables pour elle.",
+ z:"Une boîte qui s'ouvre, fait son tour de magie, et se referme avec tout dedans.",
+ v:{q:"Qu'affiche le code suivant ?", code:"function () {\n  console.log(\"hi\");\n}();",
+  o:["hi","Rien","Une erreur de syntaxe","undefined"], a:2,
+  w:["Le programme ne démarre pas.","Il y a une erreur.","Sans ( ) autour (ou sans nom), c'est une erreur de syntaxe.","Ce n'est pas exécuté."],
+  k:"La fonction doit être entourée de ( ) ou nommée, sinon c'est une erreur de syntaxe.",
+  n:"Une IIFE s'écrit (function () { … })();.",
+  z:"Il faut mettre la boîte dans un emballage ( ) avant de l'ouvrir."}},
+
+{c:"scope", s:"« Instructions de bloc », « Points-virgules et ASI »",
+ h:"Sans accolades, le if ne contrôle qu'une seule instruction.",
+ q:"Qu'affiche le code suivant ?",
+ code:"let n = 4;\nif (n > 5)\n  console.log(\"A\");\n  console.log(\"B\");",
+ o:["A puis B","B","Rien","A"], a:1,
+ w:["4 &gt; 5 est faux : A n'est pas affiché.","Seul le 1er console.log dépend du if ; B s'affiche toujours.","B est hors du if.","A dépend d'une condition fausse."],
+ k:"Les accolades sont optionnelles quand il n'y a qu'une instruction ; il vaut mieux toujours les mettre (bug « goto fail »).",
+ n:"L'indentation ne compte pas, seules les accolades comptent.",
+ z:"Le garde ne surveille que la première personne derrière lui.",
+ v:{q:"Qu'affiche le code suivant ?", code:"function f() {\n  return\n  \"ok\";\n}\nconsole.log(f());",
+  o:["ok","undefined","Une erreur","Rien"], a:1,
+  w:["Un ; est inséré juste après return.","return seul → undefined.","Le code est valide.","console.log affiche undefined."],
+  k:"L'ASI insère automatiquement des ; ; la grammaire est ambiguë, donc il faut toujours écrire ses ;. (L'exemple avec return est un piège classique, il n'est pas sur la diapo.)",
+  n:"return en fin de ligne = on renvoie undefined.",
+  z:"Tu dis « tiens… » et tu pars sans rien donner."}}
+];
+/* ====================== GÉNÉRATEURS ====================== */
+const R = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const shuf = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const escSoft = s => String(s).replace(/&(?!(lt|gt|amp|nbsp);)/g,"&amp;").replace(/</g,"&lt;");
+const NONEOPT = "Aucune de ces réponses n'est correcte.";
+const NAMES = ["a","b","x","n","total","score","val","k"];
+
+function fmtVal(v){ if (typeof v === "string") return v; if (typeof v === "function") return "la fonction"; if (Object.is(v,-0)) return "0"; return String(v); }
+function errText(e){
+  const m = String(e && e.message || "");
+  if (e instanceof SyntaxError) return "une erreur de syntaxe (rien ne s'exécute)";
+  if (/before initiali|lexical declaration/i.test(m)) return "une erreur (variable utilisée avant sa déclaration)";
+  if (/const/i.test(m)) return "une erreur (on ne peut pas réaffecter une const)";
+  if (/not a function/i.test(m)) return "une erreur (ce n'est pas une fonction)";
+  const nd = m.match(/(\w+) is not defined/);
+  if (nd) return `une erreur (${nd[1]} n'est pas définie)`;
+  return "une erreur";
+}
+/* Exécute vraiment le code et renvoie ce qu'afficherait la console */
+function run(code){
+  const out = [], before = new Set(Object.getOwnPropertyNames(globalThis));
+  const con = { log: (...a) => out.push(a.map(fmtVal).join(" ")) };
+  let err = null;
+  try { new Function("console", code)(con); } catch(e){ err = e; }
+  for (const k of Object.getOwnPropertyNames(globalThis)) if (!before.has(k)) { try { delete globalThis[k]; } catch(e){} }
+  let t = out.join(" puis ");
+  if (err) t = out.length ? t + " puis " + errText(err) : errText(err);
+  return t || "rien";
+}
+const FILL = [
+  {t:"une erreur de syntaxe (rien ne s'exécute)", why:"La syntaxe est correcte : le code s'exécute."},
+  {t:"undefined", why:"Le code calcule bien une valeur : relis-le ligne par ligne."},
+  {t:"rien", why:"Il y a au moins un console.log qui s'exécute."},
+  {t:"une erreur", why:"Le code ne plante pas ici."}
+];
+/* Construit 4 options : la bonne + 3 erreurs classiques (dédoublonnées) */
+function mkOpts(correct, okWhy, cands, fill = FILL){
+  const seen = new Set([correct]), wrong = [];
+  for (const c of [...cands, ...fill]) {
+    if (c.t === undefined || c.t === null || seen.has(c.t)) continue;
+    if (/^une erreur/.test(correct) && c.t === "une erreur") continue;
+    seen.add(c.t); wrong.push(c); if (wrong.length === 3) break;
+  }
+  const all = shuf([{t:correct, why:okWhy, ok:true}, ...wrong]);
+  return { o: all.map(x => esc(x.t)), a: all.findIndex(x => x.ok), w: all.map(x => escSoft(x.why)) };
+}
+/* Question « Qu'affiche le code ? » : la réponse vient de l'exécution réelle */
+function execQ(meta, code, alts, okWhy){
+  const correct = run(code);
+  const cands = alts.map(x => ({ t: x.t !== undefined ? x.t : (x.code ? run(x.code) : undefined), why: x.why }));
+  const why = typeof okWhy === "function" ? okWhy(correct) : okWhy;
+  return Object.assign({ q:"Qu'affiche le code suivant ?", code }, meta, mkOpts(correct, why, cands));
+}
+/* QCM ♣ à partir d'une liste d'items {t, ok, why} */
+function multiQ(meta, items){
+  const it = shuf(items).slice(0,3);
+  const o = it.map(x => x.t), w = it.map(x => (x.ok ? "" : "") + x.why);
+  const good = it.map((x,i) => x.ok ? i : -1).filter(i => i >= 0);
+  o.push(NONEOPT);
+  w.push(good.length ? "Au moins une des réponses précédentes est vraie." : "Aucune des affirmations n'est vraie.");
+  return Object.assign({ m:true }, meta, { o, a: good.length ? good : [3], w });
+}
+/* QCM simple à partir de textes */
+function simpleQ(meta, correct, okWhy, cands){ return Object.assign({}, meta, mkOpts(correct, okWhy, cands, [])); }
+
+/* ---------------- 1. WEB ---------------- */
+const G = [];
+G.push({c:"web", f(){
+  const lin = Math.random() < .5, init = lin ? 64 : 128, hops = R(3,20), ttl = init - hops, os = lin ? "Linux" : "Windows";
+  const other = (lin ? 128 : 64) - ttl;
+  return simpleQ({c:"web", s:"« ping », « TTL »", h:"Le TTL de départ dépend de l'OS de la machine qui ENVOIE la réponse : 64 (Linux/macOS) ou 128 (Windows).",
+    q:`Un <code>ping</code> vers un serveur ${os} renvoie <code>ttl=${ttl}</code>. Combien de routeurs la réponse a-t-elle traversés ?`,
+    k:"Le TTL baisse de 1 à chaque routeur traversé ; il vaut au départ 64 sous Linux/macOS et 128 sous Windows.",
+    n:"Routeurs traversés = TTL de départ − TTL reçu.", z:`Le paquet part avec ${init} bonbons et en donne un à chaque routeur : il en reste ${ttl}.`},
+    String(hops), `${init} − ${ttl} = ${hops}.`,
+    [{t:String(ttl), why:`${ttl}, c'est ce qui reste du TTL, pas ce qui a été consommé.`},
+     {t: other > 0 ? String(other) : String(hops+1), why: other > 0 ? `${other} serait le calcul avec le TTL de départ de l'autre OS.` : "Il n'y a pas de +1 : on fait juste la soustraction."},
+     {t:String(init), why:`${init} est le TTL de départ, pas un nombre de routeurs.`}]);
+}});
+G.push({c:"web", f(){
+  const img = R(0,4), css = R(0,3), js = R(0,2), style = Math.random()<.6, inl = Math.random()<.6, ifr = Math.random()<.4, ifrImg = ifr ? R(0,2) : 0, redir = Math.random()<.3;
+  const parts = [];
+  if (img) parts.push(`${img} image${img>1?"s":""}`);
+  if (css) parts.push(`${css} fichier${css>1?"s":""} CSS externe${css>1?"s":""} (balise &lt;link&gt;)`);
+  if (js) parts.push(`${js} fichier${js>1?"s":""} JavaScript externe${js>1?"s":""}`);
+  if (style) parts.push("une balise &lt;style&gt; avec du CSS");
+  if (inl) parts.push("du JavaScript écrit directement dans la page");
+  if (ifr) parts.push(`une &lt;iframe&gt; qui affiche une autre page HTML contenant ${ifrImg} image${ifrImg>1?"s":""}`);
+  const ans = 1 + img + css + js + (ifr ? 1 + ifrImg : 0) + (redir ? 1 : 0);
+  const inlineCount = (style?1:0) + (inl?1:0);
+  const det = `1 (HTML)${redir?" + 1 (requête redirigée)":""}${img?` + ${img} (images)`:""}${css?` + ${css} (CSS)`:""}${js?` + ${js} (JS)`:""}${ifr?` + 1 (page de l'iframe) + ${ifrImg} (ses images)`:""} = ${ans}.`;
+  return simpleQ({c:"web", s:"« Plusieurs requêtes par page », « Codes de statut » (web.html) + « iframe » (html.html)", h:"Une requête par FICHIER séparé. Ce qui est écrit directement dans la page ne coûte rien de plus.",
+    q:`${redir?"Tu tapes l'URL en http et le serveur répond d'abord <code>302 Found</code> vers la version https. ":""}La page contient : ${parts.length?parts.join(", "):"seulement du texte"}. Combien de requêtes HTTP le navigateur fait-il au minimum ?`,
+    k:"Une page nécessite une requête pour le HTML, puis une par ressource (image, script, feuille de style…). Une iframe inclut un autre document.",
+    n:"On compte 1 pour le HTML + 1 par fichier externe (+1 si redirection).", z:"Un aller-retour par jouet rangé dans une autre pièce ; ce qui est déjà dans ta boîte ne compte pas."},
+    String(ans), det,
+    [{t:String(ans + inlineCount), why:"Le CSS dans &lt;style&gt; et le JS écrit dans la page sont déjà dans le HTML : pas de requête en plus."},
+     {t:String(ans - 1), why:"Tu oublies la requête pour le HTML lui-même (ou la redirection)."},
+     {t:String(ans + 1), why:"Tu comptes une requête de trop."},
+     {t:String(ans + 2), why:"Tu comptes deux requêtes de trop."}]);
+}});
+const STATUS = {"200":"La requête a réussi, la page est renvoyée","301":"La page a été déplacée définitivement","400":"La requête est mal écrite","401":"Une authentification est demandée","404":"La ressource n'existe pas"};
+G.push({c:"web", f(){
+  const code = pick(Object.keys(STATUS));
+  return simpleQ({c:"web", s:"« Codes de statut »", h:"2xx = succès, 3xx = déplacement, 4xx = erreur du client.",
+    q:`Que signifie le code de statut <code>${code}</code> dans une réponse HTTP ?`,
+    k:"200 OK, 301 Moved Permanently, 400 Bad Request, 401 Unauthorized, 404 Not Found.",
+    n:"Le code de statut résume le résultat de la requête.", z:"C'est le petit mot du facteur : « livré », « déménagé », « adresse inconnue »…"},
+    STATUS[code], `${code} = ${STATUS[code]}.`,
+    shuf(Object.keys(STATUS).filter(c => c !== code)).map(c => ({t:STATUS[c], why:`Ça, c'est le code ${c}.`})));
+}});
+G.push({c:"web", f(){
+  const host = pick(["www.site.fr","forax.github.io","imgs.xkcd.com","www.univ-eiffel.fr","www.monblog.com"]);
+  const path = pick(["/index.html","/images/logo.png","/course/progweb/css.html","/comics/chat.png","/doc/a/b.html"]);
+  const mode = Math.random() < .5;
+  if (mode) {
+    const correct = `GET ${path} HTTP/1.1 puis Host: ${host} puis une ligne vide`;
+    return simpleQ({c:"web", s:"« Composants d'une URL », « HTTP/1.1 et l'en-tête Host », « netcat »", h:"Le chemin va sur la ligne GET, le nom d'hôte dans l'en-tête Host.",
+      q:`Après <code>nc ${host} 80</code>, que faut-il taper pour obtenir <code>http://${host}${path}</code> ?`,
+      k:"URL = protocole + nom d'hôte + chemin ; en HTTP/1.1, l'en-tête Host est obligatoire ; une ligne vide termine les en-têtes.",
+      n:"GET + chemin + version, puis Host, puis une ligne vide.", z:"Sur l'enveloppe la ville (Host), dans la lettre le tiroir à ouvrir (le chemin)."},
+      correct, "C'est exactement le format d'une requête HTTP/1.1.",
+      [{t:`GET ${path} HTTP/1.0 puis une ligne vide`, why:"Sans Host, un serveur qui héberge plusieurs sites ne sait pas lequel renvoyer (404 dans l'exemple du cours)."},
+       {t:`GET ${host} HTTP/1.1 puis Host: ${path} puis une ligne vide`, why:"Le nom d'hôte et le chemin sont inversés."},
+       {t:`GET ${path} puis Host: ${host} puis une ligne vide`, why:"Il manque la version HTTP sur la ligne GET."}]);
+  }
+  return simpleQ({c:"web", s:"« URL », « Composants d'une URL »", h:"protocole :// nom d'hôte chemin",
+    q:`Avec <code>nc ${host} 80</code>, tu envoies <code>GET ${path} HTTP/1.1</code> et <code>Host: ${host}</code>. Quelle URL as-tu demandée ?`,
+    k:"Une URL se compose d'un protocole (http/https), d'un nom d'hôte et d'un chemin.", n:"http:// + Host + chemin.", z:"Ville + rue + numéro = l'adresse complète."},
+    `http://${host}${path}`, "Protocole http (port 80) + nom d'hôte + chemin.",
+    [{t:`http:/${path}`, why:"Il manque le nom d'hôte."},{t:host, why:"Il manque le protocole et le chemin."},{t:`http://${host}/HTTP/1.1`, why:"HTTP/1.1 est la version, pas une partie du chemin."}]);
+}});
+const MIME = [["une page HTML en UTF-8","text/html; charset=utf-8"],["une image JPEG","image/jpeg"],["une vidéo MPEG-4","video/mp4"],["du texte brut en UTF-8","text/plain; charset=utf-8"],["un document Microsoft Word","application/msword"],["une image PNG","image/png"]];
+G.push({c:"web", f(){
+  const [d, m] = pick(MIME), size = R(120, 90000);
+  return multiQ({c:"web", s:"« Content-Length et Content-Type », « Types MIME »", h:"Content-Length = nombre d'octets sans unité ; Content-Type = type MIME « famille/sous-type ».",
+    q:`Le serveur renvoie ${d} de ${size} octets. Quels en-têtes sont corrects ?`,
+    k:"Content-Length = taille du corps en octets ; Content-Type = type du corps au format MIME (text/html, image/jpeg, video/mp4…).",
+    n:"Un type MIME s'écrit famille/précision ; une taille s'écrit en octets.", z:"Sur le colis : « ce que c'est » et « combien ça pèse en grammes »."},
+    [{t:`Content-Type: ${m}`, ok:true, why:`${m} est le bon type MIME.`},
+     {t:`Content-Length: ${size}`, ok:true, why:"La taille en octets, sans unité."},
+     {t:`Content-Length: ${size} octets`, ok:false, why:"Pas d'unité : juste le nombre."},
+     {t:`Content-Type: ${m.split(/[\/;]/)[1].trim()}`, ok:false, why:"Un type MIME s'écrit famille/sous-type."},
+     {t:`Content-Type: ${pick(MIME.filter(x=>x[1]!==m))[1]}`, ok:false, why:"Ce n'est pas le type de cette ressource."}]);
+}});
+
+/* ---------------- 2. HTML ---------------- */
+G.push({c:"html", f(){
+  const TAGS = ["section","div","ul","p","b","i","span","article"];
+  let depth = 0;
+  function build(d, ind){
+    if (d === 0) return `${ind}<p>Texte</p>\n`;
+    const t = pick(TAGS.filter(x => !["p","b","i"].includes(x)));
+    const inner = t === "ul" ? `${ind}  <li>\n${build(d-1, ind+"    ").replace(/^/gm,"")}${ind}  </li>\n` : build(d-1, ind+"  ");
+    return `${ind}<${t}>\n${inner}${Math.random()<.5?`${ind}  <p>x</p>\n`:""}${ind}</${t}>\n`;
+  }
+  const d = R(1,3);
+  const html = `<html>\n  <body>\n${build(d, "    ")}    <h1>Titre</h1>\n  </body>\n</html>`;
+  // calcul de la profondeur réelle (éléments)
+  const tokens = html.match(/<\/?[a-z0-9]+/g); let cur = 0; let max = 0;
+  for (const t of tokens) { if (t[1] === "/") cur--; else { cur++; max = Math.max(max, cur); } }
+  depth = max;
+  return simpleQ({c:"html", s:"« Arbre des éléments et DOM »", h:"Suis la branche la plus longue et compte les éléments (le texte n'en est pas un).",
+    q:"Combien d'éléments y a-t-il sur le plus long chemin, de <code>html</code> jusqu'à l'élément le plus profond ?", code: html,
+    k:"Les éléments sont organisés en arbre ; sa représentation s'appelle le DOM.", n:"On descend de parent en enfant jusqu'à la balise la plus imbriquée.", z:"Arbre généalogique : on compte les générations jusqu'au plus petit."},
+    String(depth), `La branche la plus longue compte ${depth} éléments en partant de html.`,
+    [{t:String(depth+1), why:"Le texte n'est pas un élément : on ne le compte pas."},{t:String(depth-1), why:"Tu oublies un niveau (html compte)."},{t:String(depth-2), why:"Tu oublies html et body."}]);
+}});
+const ENT = [
+  ["a &lt; b", "a < b"], ["x &gt; y &amp;&amp; z", "x > y && z"], ["&lt;br&gt; casse la ligne", "<br> casse la ligne"],
+  ["5 &lt; 7 &gt; 3", "5 < 7 > 3"], ["Tom &amp; Jerry", "Tom & Jerry"], ["&lt;b&gt;gras&lt;/b&gt;", "<b>gras</b>"]
+];
+G.push({c:"html", f(){
+  const [src, out] = pick(ENT), com = Math.random() < .5;
+  const code = `<p>${src}${com ? "<!-- secret -->" : ""}</p>`;
+  return simpleQ({c:"html", s:"« Entités », « Commentaires »", h:"Une entité affiche un caractère, elle ne crée jamais de balise ; un commentaire est invisible.",
+    q:"Quel texte le navigateur affiche-t-il ?", code,
+    k:"&lt; et &gt; sont réservés : on écrit &amp;lt; &amp;gt; &amp;amp; ; un commentaire &lt;!-- --&gt; n'est pas affiché.", n:"Entité = caractère affiché ; commentaire = invisible.", z:"&amp;lt; est le déguisement du « < »."},
+    out, "Chaque entité est remplacée par son caractère" + (com ? ", et le commentaire n'est pas affiché." : "."),
+    [{t:src, why:"Le navigateur remplace les entités, il ne les montre pas telles quelles."},
+     {t: com ? out + " secret" : out.replace(/[<>&]/g,""), why: com ? "Le commentaire n'est pas affiché." : "Les caractères ne disparaissent pas : ils sont affichés."},
+     {t:/<\/?[a-z]+>/.test(out) ? out.replace(/<\/?[a-z]+>/g,"") : undefined, why:"&amp;lt;b&amp;gt; n'est pas une vraie balise : rien n'est interprété."},{t:"rien (le paragraphe est vide)", why:"Le texte est bien affiché."}]);
+}});
+const SNIP = [
+  ["<p>a<br>b</p>", true, "br n'a pas de balise fermante : valide."],
+  ["<ul><li>a</li><li>b</li></ul>", true, "Bien imbriqué : valide."],
+  ["<table><tr><td>1</td></tr></table>", true, "table > tr > td : valide."],
+  ['<a href="#top">haut</a>', true, "Lien vers une ancre : valide."],
+  ["<section><h1>T</h1><p>x</p></section>", true, "Bien imbriqué : valide."],
+  ["<b><i>x</i></b>", true, "i est fermé avant b : valide."],
+  ["<b><i>x</b></i>", false, "b est fermé avant i : éléments entrelacés."],
+  ["<ul><li>a</ul></li>", false, "ul est fermé avant li : éléments entrelacés."],
+  ["<div><span>x</div></span>", false, "div est fermé avant span : éléments entrelacés."],
+  ["<p><em>a</p></em>", false, "p est fermé avant em : éléments entrelacés."],
+  ["<section><p>x</section></p>", false, "section est fermée avant p : éléments entrelacés."]
+];
+G.push({c:"html", f(){
+  return multiQ({c:"html", s:"« Éléments entrelacés », « Éléments vides »", h:"La dernière balise ouverte doit être la première fermée.",
+    q:"Indiquer le ou les codes HTML qui ne sont PAS valides.",
+    k:"Les éléments entrelacés sont interdits (on ne peut pas construire d'arbre) ; br est un élément sans balise fermante.", n:"Les fermetures se font dans l'ordre inverse des ouvertures.", z:"Poupées russes : on referme la petite avant la grande."},
+    SNIP.map(([s, ok, why]) => ({t:esc(s), ok:!ok, why})));
+}});
+G.push({c:"html", f(){
+  const host = pick(["www.site.fr","www.ecole.fr","forax.github.io"]), page = pick(["cours.html","tp.html","index.html","notes.html"]), id = pick(["tp","css","fin","haut","intro"]);
+  const same = Math.random() < .4;
+  if (same) return simpleQ({c:"html", s:"« Liens »", h:"Dans la même page, # + id suffit.",
+    q:`Dans ${page}, quel code crée un lien vers l'élément <code>id="${id}"</code> de la même page ?`,
+    k:"Cible : &lt;a id=\"foo\"&gt; ; lien interne : &lt;a href=\"#foo\"&gt;.", n:"Dans la même page, on n'a besoin que de #id.", z:"Tu es déjà dans le bon livre : il suffit de dire la page."},
+    `<a href="#${id}">`, "# + id = ancre dans la page actuelle.",
+    [{t:`<a href="${id}">`, why:`Sans #, « ${id} » est pris pour un fichier.`},{t:`<a id="#${id}">`, why:"id crée une cible, pas un lien."},{t:`<a href="${page}/${id}">`, why:"/ indique un dossier, pas une ancre."}]);
+  return simpleQ({c:"html", s:"« Liens »", h:"Adresse de la page + # + id.",
+    q:`Quel code fait un lien vers l'élément <code>id="${id}"</code> de la page <code>${page}</code> du site <code>http://${host}</code> ?`,
+    k:"Combinaison du cours : href=\"http://www.bar.com/hello.html#foo\".", n:"Page + #id = un endroit précis d'une autre page.", z:"« Livre X, page Y » au lieu de juste « page Y »."},
+    `<a href="http://${host}/${page}#${id}">`, "URL de la page + #id.",
+    [{t:`<a href="http://${host}/${page}/${id}">`, why:"/ chercherait un fichier ou dossier."},{t:`<a id="http://${host}/${page}#${id}">`, why:"id crée une cible, pas un lien."},{t:`<a href="#${id}">`, why:"#id seul vise la page actuelle, pas l'autre page."}]);
+}});
+
+/* ---------------- 3. CSS ---------------- */
+G.push({c:"css", f(){
+  const w = pick([50,80,100,120,150,200]), p = pick([0,5,10,15,20]), b = pick([1,2,3,5]), m = pick([0,5,10,20,30]);
+  const vis = Math.random() < .4;
+  const tot = w + 2*p + 2*b + (vis ? 0 : 2*m);
+  return simpleQ({c:"css", s:"« Modèle de boîte », « Bordures »", h:"width = le contenu seul. Ajoute chaque couche des DEUX côtés." + (vis ? " La marge est en dehors de la partie visible." : ""),
+    q: vis ? "Quelle est la largeur VISIBLE de cette boîte (bordure comprise, marge non comprise) ?" : "Quelle place horizontale TOTALE (marges comprises) occupe cette boîte ?",
+    code:`.box {\n  width: ${w}px;\n  padding: ${p}px;\n  border: ${b}px solid black;\n  margin: ${m}px;\n}`,
+    k:"padding = espace entre contenu et bordure ; border = bordure ; margin = espace entre les boîtes. (Par défaut width ne compte que le contenu.)", n:"Total = contenu + 2 paddings + 2 bordures (+ 2 marges).", z:"L'objet, le papier bulle, le carton, puis la place autour sur l'étagère."},
+    tot + " px", vis ? `${w} + 2×${p} + 2×${b} = ${tot}.` : `${w} + 2×${p} + 2×${b} + 2×${m} = ${tot}.`,
+    [{t:w + " px", why:"C'est seulement le contenu."},
+     {t:(w + p + b + (vis?0:m)) + " px", why:"Chaque couche est des deux côtés : il faut multiplier par 2."},
+     {t:(vis ? tot + 2*m : tot - 2*m) + " px", why: vis ? "La marge n'est pas visible : elle est en dehors de la bordure." : "Tu oublies la marge."},
+     {t:(w + 2*p) + " px", why:"Tu oublies la bordure."}]);
+}});
+G.push({c:"css", f(){
+  const e1 = pick([1.5,2,0.5,1.25]), e2 = pick([2,0.5,0.75,1.5]);
+  const r = 16*e1*e2;
+  return simpleQ({c:"css", s:"« Unités », « Propriétés de police », « Cascade et héritage »", h:"em est relatif à la taille de texte du parent ; les em se multiplient.",
+    q:"Avec la police par défaut du navigateur, quelle taille fait le texte du span ?",
+    code:`div      { font-size: ${e1}em; }\ndiv span { font-size: ${e2}em; }\n\n<div>A <span>B</span></div>`,
+    k:"em est proportionnel à la fonte courante (16 px avec la fonte par défaut).", n:"16 × em du parent × em de l'enfant.", z:"La poupée grandit, et le doudou se mesure par rapport à la poupée."},
+    r + " px", `16 × ${e1} = ${16*e1} px pour div, puis × ${e2} = ${r} px.`,
+    [{t:(16*e2) + " px", why:"Tu oublies que div a déjà changé de taille."},{t:(16*e1) + " px", why:"C'est la taille de div, pas du span."},{t:(16*(e1+e2)) + " px", why:"Les em se multiplient, ils ne s'additionnent pas."},{t:"16 px", why:"C'est la taille par défaut."}]);
+}});
+G.push({c:"css", f(){
+  const a = pick([10,20,30,40,50]), b = pick([10,15,25,35,50]);
+  return simpleQ({c:"css", s:"« Modèle de boîte » (exemple box-model.html)", h:"Les marges verticales de deux blocs voisins fusionnent.",
+    q:`Le bloc 1 a <code>margin-bottom: ${a}px</code> et le bloc 2, juste en dessous, a <code>margin-top: ${b}px</code>. Quel espace vertical les sépare ?`,
+    k:"Dans box-model.html, deux boîtes avec margin: 50px sont séparées de 50 px.", n:"On garde la plus grande des deux marges.", z:"Celui qui veut le plus d'espace l'obtient, l'autre est content aussi."},
+    Math.max(a,b) + " px", "Les marges verticales fusionnent : on garde la plus grande.",
+    [{t:(a+b) + " px", why:"Les marges verticales ne s'additionnent pas."},{t:Math.min(a,b) + " px", why:"C'est la plus grande qui l'emporte."},{t:Math.abs(a-b) + " px", why:"Ce n'est pas une soustraction."},{t:"0 px", why:"Il y a bien un espace."}]);
+}});
+/* Sélecteurs : calculés sur un vrai arbre */
+const TREES = [
+  ["section",[["ul",[["li",[],"Lune"],["li",[["p",[],"Soleil"]]]]],["p",[],"Étoile"],["div.note",[["p",[],"Comète"]]]]],
+  ["div",[["p.intro",[],"Lune"],["span",[["b",[],"Soleil"]]],["ul",[["li.actif",[],"Étoile"],["li",[],"Comète"]]]]],
+  ["article",[["p",[],"Lune"],["p",[["b",[],"Soleil"]]],["section",[["p.intro",[],"Étoile"]]],["div",[["span",[],"Comète"]]]]]
+];
+const SELS = ["section > p","section p","ul p","li > p","div.note p","p:first-child","li:first-child","ul","div p","div > span","article > p","article p","section p.intro",".intro","li.actif","span b","div > ul > li","p b","article section p","div span"];
+function mkNode(spec, parent){ const [tc, kids, text] = spec; const [tag, cls] = tc.split("."); const n = {tag, cls:cls||null, parent, text:text||null, kids:[]}; n.kids = (kids||[]).map(k => mkNode(k, n)); return n; }
+function parseSel(sel){ const toks = sel.split(/\s+/); const parts = []; let comb = " "; for (const t of toks){ if (t === ">") { comb = ">"; continue; } const m = t.match(/^([a-z0-9]*)(?:\.([\w-]+))?(:first-child)?$/); parts.push({tag:m[1]||null, cls:m[2]||null, first:!!m[3], comb}); comb = " "; } return parts; }
+function cmpOk(n, c){ return (!c.tag || n.tag === c.tag) && (!c.cls || n.cls === c.cls) && (!c.first || (n.parent && n.parent.kids[0] === n)); }
+function matches(n, parts, i = parts.length - 1){
+  if (!cmpOk(n, parts[i])) return false; if (i === 0) return true;
+  if (parts[i].comb === ">") return n.parent ? matches(n.parent, parts, i-1) : false;
+  for (let p = n.parent; p; p = p.parent) if (matches(p, parts, i-1)) return true; return false;
+}
+function toHTML(n, ind=""){ const open = n.cls ? `<${n.tag} class="${n.cls}">` : `<${n.tag}>`;
+  if (n.text) return `${ind}${open}${n.text}</${n.tag}>\n`;
+  return `${ind}${open}\n${n.kids.map(k => toHTML(k, ind+"  ")).join("")}${ind}</${n.tag}>\n`; }
+function leaves(n, acc=[]){ if (n.text) acc.push(n); n.kids.forEach(k => leaves(k, acc)); return acc; }
+const pathOf = n => { const p = []; for (let x = n; x; x = x.parent) p.unshift(x.cls ? `${x.tag}.${x.cls}` : x.tag); return p.join(" > "); };
+G.push({c:"css", f(){
+  for (let tries = 0; tries < 50; tries++){
+    const root = mkNode(pick(TREES), null), sel = pick(SELS), parts = parseSel(sel);
+    const lv = leaves(root);
+    const info = lv.map(l => { let hit = null; for (let x = l; x; x = x.parent) if (matches(x, parts)) { hit = x; break; } return {l, hit}; });
+    if (!info.some(i => i.hit) && Math.random() < .7) continue;
+    const items = info.map(({l, hit}) => ({t:`« ${l.text} »`, ok:!!hit,
+      why: hit ? `Chemin ${pathOf(l)} : l'élément ${hit === l ? "lui-même" : pathOf(hit).split(" > ").pop() + " (un parent, la couleur s'hérite)"} correspond à « ${sel} ».`
+               : `Chemin ${pathOf(l)} : aucun élément de ce chemin ne correspond à « ${sel} ».`}));
+    const q = multiQ({c:"css", s:"« Sélecteurs », « Cascade et héritage »", h:"Le dernier élément du sélecteur est celui ciblé ; espace = descendant, > = enfant direct. Et la couleur s'hérite aux enfants !",
+      q:"Avec ce HTML et ce CSS, quel(s) texte(s) s'affichent en rouge ?", code:`${toHTML(root)}\n${sel} { color: red; }`,
+      k:"« E1 E2 » = E2 avec un ancêtre E1 ; « E1 > E2 » = E2 dont le père est E1 ; E.cls = classe ; :first-child = premier enfant ; un style se propage aux sous-éléments.",
+      n:"Trouve les éléments ciblés, puis tout ce qu'ils contiennent hérite de la couleur.", z:"On peint la boîte choisie, et tout ce qui est dedans devient rouge aussi."}, items);
+    return q;
+  }
+}});
+const STY = { "upper-alpha":n=>String.fromCharCode(64+n), "lower-alpha":n=>String.fromCharCode(96+n), "upper-roman":n=>["I","II","III","IV","V","VI"][n-1], "lower-roman":n=>["i","ii","iii","iv","v","vi"][n-1], "decimal":n=>String(n) };
+G.push({c:"css", f(){
+  const s1 = pick(Object.keys(STY)), s2 = pick(Object.keys(STY).filter(x => x !== s1)), inner = Math.random() < .6, k = R(1,4);
+  const items = inner ? ["Intro"] : ["Intro","Suite","Fin","Annexe"].slice(0, Math.max(k,2));
+  const sub = ["Histoire","Versions","Usages","Limites"].slice(0, inner ? Math.max(k,2) : 2);
+  const code = `ol    { list-style-type: ${s1}; }\nol ol { list-style-type: ${s2}; }\n\n<ol>\n  <li>${items[0]}\n    <ol>\n${sub.map(x=>`      <li>${x}</li>`).join("\n")}\n    </ol>\n  </li>\n${items.slice(1).map(x=>`  <li>${x}</li>`).join("\n")}${items.length>1?"\n":""}</ol>`;
+  const target = inner ? sub[k-1] : items[k-1], st = inner ? s2 : s1, other = inner ? s1 : s2;
+  return simpleQ({c:"css", s:"« Listes » (html.html) + « Style des listes », « Sélecteurs » (css.html)", h:"La liste interne est un ol DANS un ol : « ol ol » la vise.",
+    q:`Que voit-on devant « ${target} » ?`, code,
+    k:"list-style-type : none, disc, circle, square, decimal, upper-alpha, lower-alpha, upper-roman, lower-roman ; « E1 E2 » = descendant.", n:"« ol ol » vise les listes imbriquées, « ol » la liste externe.", z:"Grand classeur et petit classeur dedans, chacun avec sa façon de numéroter."},
+    STY[st](k) + ".", `« ${target} » est le n°${k} de la liste ${inner ? "interne (règle ol ol)" : "externe (règle ol)"} → ${st}.`,
+    [{t:STY[other](k) + ".", why:`Ce serait le style de la liste ${inner ? "externe" : "interne"}.`},{t:k + ".", why:"decimal est remplacé par la règle CSS."},{t:STY[st](Math.min(k+1,6)) + ".", why:"Les éléments sont numérotés à partir de 1 dans leur propre liste."},{t:"•", why:"Une liste ol est numérotée."}]);
+}});
+const COLORS = [["rouge","red","rgb(255, 0, 0)","#FF0000"],["bleu","blue","rgb(0, 0, 255)","#0000FF"],["blanc","white","rgb(255, 255, 255)","#FFFFFF"],["noir","black","rgb(0, 0, 0)","#000000"]];
+G.push({c:"css", f(){
+  const [fr, name, rgb, hex] = pick(COLORS), tag = pick(["b","p","li","span"]);
+  const wrong = pick(COLORS.filter(c => c[0] !== fr));
+  return multiQ({c:"css", s:"« Syntaxe », « Couleurs »", h:"La propriété s'appelle color ; en RGB l'ordre est rouge, vert, bleu.",
+    q:`Quels codes CSS mettent le texte des <code>&lt;${tag}&gt;</code> en ${fr} ?`,
+    k:"Une couleur s'écrit avec un nom, rgb(255, 255, 255), rgb(100%, 100%, 100%) ou #FFFFFF.", n:"color + nom, rgb() ou #hexa.", z:"Trois pots de peinture : rouge, vert, bleu."},
+    [{t:`${tag} { color: ${rgb}; }`, ok:true, why:`${rgb} = ${fr}.`},{t:`${tag} { color: ${hex}; }`, ok:true, why:`${hex} = ${fr}.`},
+     {t:`${tag} { text-color: ${name}; }`, ok:false, why:"text-color n'existe pas : la propriété est color."},
+     {t:`${tag} { color: ${wrong[2]}; }`, ok:false, why:`${wrong[2]} = ${wrong[0]}.`},{t:`${tag} { color: ${name}; }`, ok:true, why:`${name} est un nom de couleur valide.`}]);
+}});
+const POS = [["static","Le comportement normal (par défaut)"],["fixed","Le coin supérieur gauche de la fenêtre"],["relative","La position habituelle de l'élément"],["absolute","La boîte parente marquée position: relative"]];
+G.push({c:"css", f(){
+  const [v, ref] = pick(POS);
+  return simpleQ({c:"css", s:"« Positionnement »", h:"fixed = fenêtre ; relative = sa place ; absolute = parent relative.",
+    q:`Avec <code>position: ${v}</code>, par rapport à quoi l'élément est-il placé ?`,
+    k:"static : normal ; fixed : coin de la fenêtre ; relative : position habituelle ; absolute : boîte parente marquée relative.", n:"Chaque valeur a son point de référence.", z:"fixed = collé à l'écran ; relative = je me penche depuis ma chaise ; absolute = je me colle au cadre."},
+    ref, `C'est la définition de ${v}.`, POS.filter(p => p[0] !== v).map(p => ({t:p[1], why:`Ça, c'est ${p[0]}.`})));
+}});
+
+/* ---------------- 4. JAVASCRIPT ---------------- */
+const JSM = (s, h, k, n, z) => ({c:"js", s, h, k, n, z});
+G.push({c:"js", f(){
+  const a = R(5,40), b = pick([2,3,4,5,8]);
+  if (Math.random() < .3) {
+    const code = `console.log(${a} / 0, -${a} / 0, 0 / 0);`;
+    return execQ(JSM("« Flottants »","La division ne lève jamais d'erreur en JS.","La division ne lève pas d'erreur ; 0/0 donne NaN (Not a Number).","x/0 donne ±Infinity, 0/0 donne NaN.","Partager entre 0 enfant, ça ne veut rien dire : JS répond « l'infini »."),
+      code, [{t:"une erreur (division par zéro)", why:"La division ne lève jamais d'erreur en JS."},{t:"NaN NaN NaN", why:"Seul 0/0 donne NaN ; a/0 donne ±Infinity."},{t:"Infinity Infinity NaN", why:"−a/0 donne −Infinity."}], "x/0 = Infinity, −x/0 = −Infinity, 0/0 = NaN.");
+  }
+  const code = `let a = ${a};\nlet b = ${b};\nconsole.log(a / b, a % b);`;
+  return execQ(JSM("« Opérateurs arithmétiques », « Flottants »","Tous les nombres sont des flottants : pas de division entière.","+, -, *, /, % s'appliquent aux nombres ; les nombres sont toujours des flottants.","/ divise vraiment, % donne le reste.","Partager des bonbons : / coupe les morceaux, % compte ceux qui restent."),
+    code, [{t:`${Math.floor(a/b)} ${a%b}`, why:"Il n'y a pas de division entière en JS."},{t:`${a/b} ${+(a/b - Math.floor(a/b)).toFixed(4)}`, why:"% donne le reste entier, pas la partie décimale."},{t:`${Math.floor(a/b)} ${a/b}`, why:"/ et % sont inversés."}],
+    r => `${a} / ${b} = ${a/b} et ${a} = ${Math.floor(a/b)}×${b} + ${a%b}.`);
+}});
+G.push({c:"js", f(){
+  const term = () => { const v = R(1,9); return Math.random() < .45 ? `"${v}"` : String(v); };
+  const expr = () => { let e = term(); const n = R(2,3); for (let i=1;i<n;i++) e += ` ${Math.random()<.7?"+":"-"} ${Math.random()<.1?'"a"':term()}`; return e; };
+  const e1 = expr(), e2 = expr();
+  const code = `console.log(${e1}, ${e2});`;
+  const num = code.replace(/"(\d)"/g, "$1");
+  const allStr = `console.log(${e1.replace(/^(\d)/,'"$1"')}, ${e2.replace(/^(\d)/,'"$1"')});`;
+  return execQ(JSM("« Concaténation » (javascript.html) + « Arithmétique sur types mélangés » (js-scope.html)","De gauche à droite, deux par deux : + colle dès qu'une chaîne apparaît, - calcule toujours.","+ concatène si l'un des opérandes est une chaîne ; \"foo\" - 1 fait partie des résultats surprenants.","+ préfère les chaînes, - force les nombres.","Le colleur (+) colle les étiquettes, la calculatrice (-) transforme tout en nombre."),
+    code, [{code:num, why:"Les guillemets font de ces nombres des chaînes : + colle au lieu d'additionner."},{code:allStr, why:"Tant qu'aucune chaîne n'est apparue (de gauche à droite), + additionne."},{t:"une erreur", why:"Mélanger chaînes et nombres ne plante pas en JS."}],
+    "On évalue de gauche à droite : + colle dès qu'une chaîne est là, - convertit en nombre (NaN si impossible).");
+}});
+const EQ = [
+  ['5 == "5"', true, '== convertit "5" en 5.'], ['5 === "5"', false, "=== compare aussi le type."], ["0.1 + 0.2 == 0.3", false, "0.1 + 0.2 = 0.30000000000000004."],
+  ["NaN == NaN", false, "NaN n'est égal à rien, même pas à lui-même."], ['4 !== "4"', true, "Types différents → !== vrai."], ['"a" != "a"', false, "Les deux chaînes sont égales."],
+  ["0 == false", true, "== convertit false en 0."], ['"10" == 10', true, "== convertit la chaîne."], ["null == 0", false, "null == 0 est faux (bizarrerie du cours)."],
+  ["null >= 0", true, "null >= 0 est vrai (bizarrerie du cours)."], ["(0.1 + 0.2).toFixed(1) == 0.3", true, 'toFixed donne "0.3", == le convertit.'],
+  ['3 + "" === "3"', true, '3 + "" colle → la chaîne "3".'], ["0 / 0 === 0 / 0", false, "NaN === NaN est faux."], ["1 / 0 == 1 / 0", true, "Infinity == Infinity."],
+  ['"abc" === \'abc\'', true, "Guillemets simples ou doubles : même chaîne."], ['"3" - 1 === 2', true, "- convertit en nombre : 2 === 2."], ['"3" + 1 == 4', false, '"3" + 1 donne "31".']
+];
+G.push({c:"js", f(){
+  return multiQ({c:"js", s:"« Opérateurs d'égalité », « Flottants » (javascript.html) + « Arithmétique sur types mélangés » (js-scope.html)", h:"== convertit, === non ; NaN n'est égal à rien ; les flottants ne sont pas exacts.",
+    q:"Lesquelles de ces expressions valent <code>true</code> ?",
+    k:"== et != comparent tous les types (de façon surprenante) ; === et !== vérifient aussi le type ; NaN n'est pas égal à lui-même ; 0.1 + 0.2 == 0.3 est faux.", n:"== ressemble, === identique (valeur ET type).", z:"== : « ça se ressemble ? » ; === : « c'est exactement la même chose ? »."},
+    EQ.map(([e, v, why]) => ({t:`<code>${esc(e)}</code>`, ok:v, why:(v ? "Vrai : " : "Faux : ") + esc(why)})));
+}});
+G.push({c:"js", f(){
+  const v = R(1,9);
+  const tpl = pick(["i++ + ++i","++i + i++","i++ * 2","--i + i--","i + i++","++i * i","i-- - --i","i++ + i++"]);
+  const code = `let i = ${v};\nlet j = ${tpl};\nconsole.log(i, j);`;
+  const swap = code.replace(/(\+\+|--)i|i(\+\+|--)/g, (m, pre, post) => pre ? "i" + pre : post + "i");
+  return execQ(JSM("« Pré- et post-incrémentation »","i++ renvoie l'ancienne valeur puis augmente ; ++i augmente puis renvoie la nouvelle. Calcule de gauche à droite.","i++/i-- renvoient la valeur courante puis modifient i ; ++i/--i modifient puis renvoient la nouvelle valeur.","Post = je donne puis je change ; pré = je change puis je donne.","i++ : tu montres ton ticket puis tu avances ; ++i : tu avances puis tu montres."),
+    code, [{code:swap, why:"Tu as inversé pré et post : i++ donne l'ancienne valeur, ++i la nouvelle."},{code:`let i = ${v};\nlet j = ${tpl};\nconsole.log(${v}, j);`, why:"i a bien été modifié par ++ / --."}],
+    "On évalue de gauche à droite en suivant la valeur de i après chaque ++/--.");
+}});
+G.push({c:"js", f(){
+  const t = pick([0,1,2,3]);
+  let code, alts, ok;
+  if (t === 0) { const v = R(-3,3), th = R(0,2), w = R(5,20);
+    code = `let n = ${v};\nlet r = n > ${th} && (n = ${w});\nconsole.log(r, n);`;
+    alts = [{code:`let n = ${v};\nlet g = n > ${th};\nn = ${w};\nlet r = g && n;\nconsole.log(r, n);`, why:"Si la gauche de && est fausse, la droite n'est jamais exécutée."},{code:`let n = ${v};\nlet r = Boolean(n > ${th} && (n = ${w}));\nconsole.log(r, n);`, why:"&& renvoie une des deux valeurs, pas forcément true/false."}];
+  } else if (t === 1) { const b = pick(["true","false"]), w = R(1,9);
+    code = `let m;\nlet r = ${b} || (m = ${w});\nconsole.log(r, m);`;
+    alts = [{t:`${b === "true" ? "true" : w} ${w}`, why:"Si la gauche de || est vraie, la droite n'est pas exécutée."},{t:`true ${b === "true" ? "undefined" : w}`, why:"|| renvoie la valeur de droite quand la gauche est fausse, pas true."}];
+  } else if (t === 2) { const x = pick(["0","undefined",String(R(1,9))]), d = R(10,20), th = R(3,12);
+    code = `let x = ${x};\nlet y = x || ${d};\nlet z = (y > ${th}) && "ok";\nconsole.log(y, z);`;
+    alts = [{t:`${x} ok`, why:`${x === "0" || x === "undefined" ? x + " compte comme faux : || prend la valeur de droite." : "x est vrai : || garde x."}`},{code:code.replace('&& "ok"', "&& true"), why:"&& renvoie la valeur de droite (\"ok\"), pas true."}];
+  } else { const a = R(0,1), w = R(2,9);
+    code = `let a = ${a};\nlet b = a && "x";\nlet c = b || "défaut";\nconsole.log(b, c);`;
+    alts = [{t:`x x`, why:"0 compte comme faux : && s'arrête et renvoie 0."},{t:`false défaut`, why:"&& renvoie la valeur elle-même (0), pas false."},{t:`x défaut`, why:"Si b vaut \"x\" (vrai), || garde \"x\"."}];
+  }
+  return execQ(JSM("« Évaluation paresseuse », « Opérateurs booléens », « Variables »","&& s'arrête au premier faux, || au premier vrai ; et ils renvoient une des deux VALEURS.","Si la gauche de && est fausse, la droite n'est pas évaluée ; si la gauche de || est vraie, non plus.","a && b : b si a est vrai ; a || b : a s'il est vrai, sinon b.","« Si le premier dit non, on ne demande même pas au second. »"), code, alts, "On applique l'évaluation paresseuse, en gardant les valeurs renvoyées par && et ||.");
+}});
+G.push({c:"js", f(){
+  const start = R(0,2), end = R(6,10), k = pick([2,3]), r = R(0,k-1), br = R(start+2,end-1), str = Math.random() < .5;
+  const code = `let s = ${str ? '""' : 0};\nfor (let i = ${start}; i < ${end}; i++) {\n  if (i % ${k} == ${r}) continue;\n  if (i > ${br}) break;\n  s += i;\n}\nconsole.log(s);`;
+  return execQ(JSM("« for », « break », « continue » (+ « Concaténation »)","continue saute UN tour, break arrête TOUTE la boucle. Fais un tableau tour par tour." + (str ? " s est une chaîne : += colle." : ""),"break sort de la boucle ; continue passe à l'itération suivante.","continue = je passe mon tour ; break = je quitte le jeu.","On saute certains joueurs, puis tout le monde rentre au signal."),
+    code, [{code:code.replace(/\n  if \(i > \d+\) break;/,""), why:"Tu oublies le break : la boucle s'arrête avant la fin."},{code:code.replace(/\n  if \(i % \d+ == \d+\) continue;/,""), why:"Tu oublies le continue : certains tours sont sautés."},{code:code.replace("break","continue"), why:"break arrête toute la boucle, il ne saute pas juste un tour."},{code:code.replace(/let s = ""/,"let s = 0").replace(/let s = 0;/, str ? "let s = 0;" : 'let s = "";'), why: str ? "s est une chaîne : += colle au lieu d'additionner." : "s part de 0 (un nombre) : += additionne, il ne colle pas."}],
+    "On déroule la boucle : les tours où i % " + k + " == " + r + " sont sautés, et on sort dès que i > " + br + ".");
+}});
+G.push({c:"js", f(){
+  const s = R(0,2), n = R(3,5), pre = Math.random() < .5;
+  const code = `let i = ${s};\nlet out = "";\nwhile (${pre ? "++i" : "i++"} < ${n}) {\n  out += i;\n}\nconsole.log(out, i);`;
+  return execQ(JSM("« while », « Pré- et post-incrémentation », « Concaténation »","Le test s'exécute à chaque tour, MÊME le dernier (celui qui est faux) — et il incrémente quand même.","i++ renvoie la valeur courante puis modifie i ; ++i modifie puis renvoie.","On compare l'ancienne (i++) ou la nouvelle (++i) valeur ; i bouge à chaque test.","Tu avances d'une case à chaque fois qu'on te pose la question, même quand la réponse est non."),
+    code, [{code:code.replace(pre ? "++i" : "i++", pre ? "i++" : "++i"), why:"Tu as inversé pré et post-incrémentation."},{code:`let i = ${s};\nlet out = "";\nwhile (i < ${n}) {\n  i++;\n  out += i;\n}\nconsole.log(out, i);`, why: pre ? "Avec ++i, on teste la NOUVELLE valeur." : "Le dernier test (faux) incrémente quand même i."}],
+    "Tableau tour par tour : à chaque test, i change, puis on ajoute i à la chaîne si le test est vrai.");
+}});
+G.push({c:"js", f(){
+  const age = R(10,25), a = R(17,21), b = R(12, a-1);
+  const code = `let age = ${age};\nlet msg = age >= ${a} ? "majeur" : age >= ${b} ? "presque" : "mineur";\nconsole.log(msg);`;
+  return execQ(JSM("« Opérateur ternaire »","Lis comme un if / else if / else, de gauche à droite.","L'opérateur ternaire ?: est un if en ligne qui renvoie une valeur.","Un ternaire dans un ternaire = if / else if / else.","Deux portes à franchir l'une après l'autre."),
+    code, [{t:"majeur", why:`${age} >= ${a} est ${age >= a}.`},{t:"presque", why:`Il faut ${age} < ${a} et ${age} >= ${b}.`},{t:"mineur", why:`Il faut ${age} < ${b}.`},{t:"une erreur", why:"On peut enchaîner des ternaires."}],
+    `age = ${age} : on teste d'abord >= ${a}, puis >= ${b}.`);
+}});
+const TYP = [['4 + "4"',"string"],['4 - "4"',"number"],['"a" - 1',"number"],["0 / 0","number"],['"5" + 5 - 5',"number"],["typeof 3","string"],['"" + true',"string"],["(0.5).toFixed(1)","string"],['parseInt("12")',"number"],["true","boolean"],["3 > 2","boolean"],["undefined","undefined"]];
+const NAIVE = {'4 + "4"':"number",'4 - "4"':"string",'"a" - 1':"string","0 / 0":"undefined",'"5" + 5 - 5':"string","typeof 3":"number",'"" + true':"boolean","(0.5).toFixed(1)":"number",'parseInt("12")':"string","true":"string","3 > 2":"number","undefined":"string"};
+G.push({c:"js", f(){
+  const ex = shuf(TYP).slice(0,3);
+  const code = `console.log(${ex.map(e => `typeof (${e[0]})`).join(", ")});`;
+  const naive = ex.map(e => NAIVE[e[0]]).join(" ");
+  const mixed = ex.map((e,i) => i === 0 ? NAIVE[e[0]] : e[1]).join(" ");
+  return execQ(JSM("« Types de base », « Concaténation », « Affichage des flottants » (javascript.html) + « Arithmétique sur types mélangés » (js-scope.html)","+ avec une chaîne → string ; - → toujours number (même NaN) ; typeof renvoie toujours une chaîne.","Trois types de base : boolean, number, string ; typeof renvoie le type d'une valeur ; NaN est un nombre « pas un nombre ».","Trouve d'abord la valeur, puis son type.","Avant de dire de quelle famille est l'animal, regarde bien quel animal c'est."),
+    code, [{t:naive, why:"Piège : regarde bien la valeur produite avant de donner son type."},{t:mixed, why:"Le premier type est faux : calcule d'abord la valeur."},{t:ex.map(()=>"string").join(" "), why:"Toutes ne sont pas des chaînes."}],
+    "On calcule chaque valeur, puis son type : " + ex.map(e => `${e[0]} → ${e[1]}`).join(" ; ") + ".");
+}});
+G.push({c:"js", f(){
+  const t = pick([0,1,2]), n = pick(NAMES.slice(0,4)), m = pick(["b","y","z","w"].filter(x => x !== n)), v = R(1,9), w = R(10,20);
+  let code, alts;
+  if (t === 0) { code = `let ${n};\nconsole.log(${n});\nconsole.log(${m});`; alts = [{t:"undefined puis undefined", why:`${m} n'a jamais été déclarée : c'est une erreur.`},{t:"une erreur", why:`${n} est déclarée : la 1re ligne affiche undefined.`},{t:`undefined puis rien`, why:"Utiliser une variable non déclarée plante."}]; }
+  else if (t === 1) { code = `let ${n} = ${v};\nlet ${n} = ${w};\nconsole.log(${n});`; alts = [{t:String(w), why:"On ne peut pas redéclarer un let : le programme ne démarre pas."},{t:String(v), why:"On ne peut pas redéclarer un let."}]; }
+  else { code = `let ${n} = ${v};\n${n} = ${w};\nconsole.log(${n});`; alts = [{t:String(v), why:"Réaffecter un let est autorisé."},{t:"une erreur de syntaxe (rien ne s'exécute)", why:"On réaffecte sans redéclarer : c'est permis."}]; }
+  return execQ(JSM("« Variables »","Non déclarée ≠ déclarée sans valeur. Redéclarer ≠ réaffecter.","Une variable déclarée non initialisée vaut undefined ; utiliser une variable non déclarée plante ; redéclarer le même let est interdit.","undefined = boîte vide ; erreur = boîte inexistante.","Une boîte vide avec une étiquette, ce n'est pas pareil qu'une boîte qui n'existe pas."), code, alts,
+    "Déclarée sans valeur → undefined ; jamais déclarée → erreur ; redéclarée avec let → erreur de syntaxe ; réaffectée → OK.");
+}});
+
+/* ---------------- 5. FONCTIONS ---------------- */
+const FNM = (s, h, k, n, z) => ({c:"fn", s, h, k, n, z});
+G.push({c:"fn", f(){
+  const nb = R(0,3), args = [];
+  for (let i = 0; i < nb; i++) args.push(Math.random() < .5 ? `"${pick(["Bob","Kathy","!","?"])}"` : String(R(1,9)));
+  const def = Math.random() < .5;
+  const code = def ? `function f(a, b) {\n  const bb = b === undefined ? 10 : b;\n  return a + bb;\n}\nconsole.log(f(${args.join(", ")}));` : `function f(a, b) {\n  console.log(\`\${a} et \${b}\`);\n}\nf(${args.join(", ")});`;
+  return execQ(FNM("« Paramètres et arguments », « Paramètres optionnels » (+ « Concaténation »)","Arguments en trop : ignorés ; arguments manquants : undefined. Attention à + avec une chaîne.","Les arguments en trop sont ignorés, ceux qui manquent valent undefined ; pour un paramètre optionnel, on teste === undefined.","JS ne vérifie jamais le nombre d'arguments.","Deux mains : un 3e bonbon tombe, une main vide tient « rien »."),
+    code, [{t:"une erreur", why:"JS ne vérifie jamais le nombre d'arguments."}, {t: !def && nb > 2 ? args.map(x => x.replace(/"/g,"")).join(" et ") : undefined, why:"Les arguments en trop sont ignorés : il n'y a que 2 paramètres."}, {t: !def && nb < 2 ? (nb ? args[0].replace(/"/g,"") + " et " : " et ") : undefined, why:"Un argument manquant vaut undefined, et il est affiché tel quel."}, {code:code.replace(" === undefined ? 10 : b", " ? b : 10").replace("`${a} et ${b}`","`${a} et ${b || ''}`"), why: def ? "Seul undefined est remplacé par 10 : on teste === undefined." : "Un argument manquant s'affiche « undefined », pas vide."}],
+    "Paramètres manquants = undefined, arguments en trop ignorés ; on suit ensuite le calcul (+ colle si une chaîne est présente).");
+}});
+G.push({c:"fn", f(){
+  if (Math.random() < .5) {
+    const a = R(1,5), b = R(6,9), k = R(2,10);
+    const code = `let a = ${a};\nconst f = () => a * ${k};\na = ${b};\nconsole.log(f());`;
+    return execQ(FNM("« Closures »","La fonction lit la variable au moment où on l'APPELLE.","Une fonction qui utilise les variables de son contexte s'appelle une closure.","Une closure regarde la variable elle-même, pas une copie.","La fonction regarde par la fenêtre au moment où on lui pose la question."),
+      code, [{t:String(a*k), why:"f ne garde pas l'ancienne valeur : elle lit a au moment de l'appel."},{t:"la fonction", why:"On appelle f : on affiche son résultat."},{t:"une erreur", why:"a est accessible depuis f."}], `Au moment de f(), a vaut ${b} → ${b} × ${k}.`);
+  }
+  const x = R(1,4), y = R(0,3);
+  const code = `function compteur() {\n  let n = 0;\n  return () => { n++; return n; };\n}\nconst c1 = compteur();\nconst c2 = compteur();\n${"c1();\n".repeat(x)}${"c2();\n".repeat(y)}console.log(c1(), c2());`;
+  return execQ(FNM("« Closures », « Fonctions qui renvoient des fonctions »","Chaque appel à compteur() crée-t-il un nouveau n ?","Une fonction interne accède aux variables de la fonction englobante (closure) et peut les modifier.","Chaque compteur a son propre n.","Chaque tirelire a ses propres pièces."),
+    code, [{t:`${x+y+1} ${x+y+2}`, why:"c1 et c2 ont chacun leur propre n."},{t:"1 1", why:"n est gardé en vie entre les appels."},{t:"une erreur", why:"La closure garde n en vie."}], `c1 a été appelé ${x} fois avant → ${x+1} ; c2 ${y} fois → ${y+1}.`);
+}});
+const FNS = [["x => x + 3", x=>x+3],["x => x * 2", x=>x*2],["x => x - 1", x=>x-1],["x => x * x", x=>x*x],["x => x + 10", x=>x+10]];
+G.push({c:"fn", f(){
+  const [fs, f] = pick(FNS), [gs, g] = pick(FNS.filter(z => z[0] !== fs)), v = R(1,4);
+  const tw = Math.random() < .5;
+  const code = tw ? `const twice = f => x => f(f(x));\nconsole.log(twice(${fs})(${v}));` : `const compose = (f, g) => x => f(g(x));\nconsole.log(compose(${fs}, ${gs})(${v}));`;
+  return execQ(FNM("« Fonctions fléchées », « Fonctions en argument », « Fonctions qui renvoient des fonctions »", tw ? "twice applique f deux fois." : "f(g(x)) : on applique d'abord g, puis f.","Une fonction peut être passée en argument, et une fonction peut renvoyer une fonction.","Une fonction qui fabrique une fonction.","Une machine qui fabrique des machines."),
+    code, tw ? [{t:String(f(v)), why:"twice applique la fonction DEUX fois."},{t:String(f(v)*2), why:"On applique f au résultat, on ne double pas le résultat."},{t:"une erreur", why:"C'est du JS valide."}]
+             : [{t:String(g(f(v))), why:"L'ordre est inversé : g s'applique en premier."},{t:String(f(v)), why:"g s'applique aussi."},{t:"une erreur", why:"C'est du JS valide."}],
+    tw ? `f(f(${v})) = f(${f(v)}) = ${f(f(v))}.` : `g(${v}) = ${g(v)}, puis f(${g(v)}) = ${f(g(v))}.`);
+}});
+G.push({c:"fn", f(){
+  const v = R(2,9), forms = shuf([["function f(x) {\n  x * 2;\n}", false],["const f = x => { x * 2 };", false],["const f = x => x * 2;", true],["const f = x => { return x * 2; };", true],["function f(x) {\n  return x * 2;\n}", true]]).slice(0,2);
+  const code = `${forms[0][0].replace(/f/,"f")}\n${forms[1][0].replace(/\bf\b/,"g")}\nconsole.log(f(${v}), g(${v}));`;
+  const all = `const f = x => x * 2;\nconst g = x => x * 2;\nconsole.log(f(${v}), g(${v}));`;
+  return execQ(FNM("« Valeur de retour », « Fonctions fléchées »","Avec des accolades { }, il faut un return. Sans accolades, l'expression est renvoyée.","Sans return, le résultat est undefined ; syntaxe : (args) => expression ou (args) => { instructions }.","Accolades = bloc = return obligatoire.","Le cuisinier fait le gâteau mais ne te le donne pas s'il ne dit pas return."),
+    code, [{code:all, why:"Une fonction avec accolades et sans return renvoie undefined."},{t:"undefined undefined", why:"Une flèche sans accolades, ou un return, renvoie bien la valeur."},{t:"une erreur", why:"Le code est valide."}], "On regarde chaque fonction : sans return dans un bloc { } → undefined.");
+}});
+G.push({c:"fn", f(){
+  const t = pick([0,1,2]), n = t === 2 ? R(4,7) : R(3,6);
+  const code = [`function g(n) {\n  return n == 0 ? 0 : n + g(n - 1);\n}\nconsole.log(g(${n}));`,
+                `function factorial(x) {\n  if (x == 1) return 1;\n  return x * factorial(x - 1);\n}\nconsole.log(factorial(${n}));`,
+                `function f(n) {\n  return n <= 1 ? n : f(n - 1) + f(n - 2);\n}\nconsole.log(f(${n}));`][t];
+  const sum = n*(n+1)/2, fact = [1,1,2,6,24,120,720,5040][n], fib = [0,1,1,2,3,5,8,13][n];
+  const vals = [sum, fact, fib];
+  return execQ(FNM("« Récursion » (+ « Opérateur ternaire »)","Calcule pas à pas en partant du cas d'arrêt.","Une fonction peut s'appeler elle-même (exemple factorial).","Chaque appel se ramène à un appel plus petit, jusqu'au cas d'arrêt.","Des poupées russes : on ouvre jusqu'à la plus petite, puis on remonte."),
+    code, [{t:String(vals[(t+1)%3]), why:"Ce serait une autre récursion : relis l'opération (+ ou ×)."},{t:String(vals[(t+2)%3]), why:"Ce serait une autre récursion."},{t:String(t === 2 ? [0,1,1,2,3,5,8,13][n+1] : t === 1 ? n * fact : sum - n), why:"Erreur d'un cran sur le cas d'arrêt."},{t:"une erreur (boucle infinie)", why:"Le cas d'arrêt est bien atteint."}],
+    "On déroule les appels jusqu'au cas d'arrêt puis on remonte.");
+}});
+G.push({c:"fn", f(){
+  const a = R(0,10), b = a + R(3,15), N = b - a + 1;
+  return simpleQ({c:"fn", s:"« L'objet Math », « Math.random() »", h:"Math.random() ∈ [0, 1[ : 1 exclu. floor(random × N) donne 0 à N−1.",
+    q:`Quelle expression renvoie un entier entre ${a} et ${b} inclus ?`,
+    k:"Math.random() renvoie un nombre dans [0, 1) ; Math.floor(Math.random() * 10) donne un entier de 0 à 9.", n:"Pour N valeurs : floor(random × N) + minimum.", z:"La roue a N cases numérotées à partir de 0 ; on décale du minimum."},
+    `Math.floor(Math.random() * ${N}) + ${a}`, `${N} valeurs possibles (de ${a} à ${b}) : 0 à ${N-1}, puis + ${a}.`,
+    [{t:`Math.floor(Math.random() * ${N-1}) + ${a}`, why:`Donne ${a} à ${b-1} : ${b} n'est jamais atteint.`},{t:`Math.floor(Math.random() * ${b}) + ${a}`, why:`Donne ${a} à ${a+b-1}.`},{t:`Math.random() * ${N} + ${a}`, why:"Sans floor, ce n'est pas un entier."}]);
+}});
+G.push({c:"fn", f(){
+  const x = `${R(1,40)}.${R(1,9)}`, y = `0.${R(1,9)}`;
+  const code = `console.log(parseInt("${x}") + parseFloat("${y}"), "${x}" + ${y}, Math.floor(${x}));`;
+  return execQ(FNM("« Conversion chaîne ↔ nombre », « L'objet Math » (+ « Concaténation »)","parseInt s'arrête au point ; une chaîne + un nombre → on colle.","parseInt et parseFloat convertissent une chaîne en nombre ; Math.floor arrondit vers le bas.","parseInt coupe les décimales, parseFloat les garde.","parseInt coupe la croûte, parseFloat garde tout le pain."),
+    code, [{code:code.replace("parseInt","parseFloat"), why:"parseInt ne garde pas les décimales."},{code:code.replace(`"${x}" + ${y}`, `${x} + ${y}`), why:"\"…\" + nombre colle, il n'additionne pas."},{code:code.replace("Math.floor","Math.round"), why:"floor arrondit toujours vers le bas."}], "parseInt garde la partie entière, + avec une chaîne colle, floor arrondit vers le bas.");
+}});
+G.push({c:"fn", f(){
+  const t = pick([0,1,2,3]), v = R(2,9);
+  const code = [`let carre = x -> x * x;\nconsole.log(carre(${v}));`, `let add = (a, b) => a + b;\nconsole.log(add(${v})(3));`, `let c = ${v};\nconsole.log(c(1, 2));`, `function salut() {\n  return "salut";\n}\nconsole.log(typeof salut, typeof salut());`][t];
+  return execQ(FNM("« Fonctions fléchées », « Appeler une valeur avec () », « Fonctions comme valeurs »","Regarde la syntaxe de la flèche, et si ce qu'on appelle avec () est vraiment une fonction.","() peut s'appliquer à toute valeur mais ne marche que sur une fonction ; la flèche s'écrit =>.","On n'appelle avec () que des fonctions.","On n'appuie que sur le bouton d'une machine."),
+    code, [
+      [{t:String(v*v), why:"-> n'existe pas en JS : la flèche s'écrit =>."},{t:"undefined", why:"Le programme ne démarre pas (erreur de syntaxe)."},{t:"une erreur (ce n'est pas une fonction)", why:"L'erreur arrive avant, à la lecture : c'est une erreur de syntaxe."}],
+      [{t:String(v+3), why:"add attend ses deux arguments en un seul appel : add("+v+") vaut NaN, et NaN(3) n'est pas une fonction."},{t:"NaN", why:"add("+v+") vaut NaN, mais ensuite on essaie de l'appeler avec (3) : erreur."},{t:"une erreur de syntaxe (rien ne s'exécute)", why:"La syntaxe est correcte : l'erreur arrive à l'exécution."}],
+      [{t:String(v), why:"c vaut "+v+" : ce n'est pas une fonction, on ne peut pas l'appeler."},{t:"undefined", why:"Appeler un nombre provoque une erreur."},{t:"une erreur de syntaxe (rien ne s'exécute)", why:"La syntaxe est correcte : l'erreur arrive à l'exécution."}],
+      [{t:"string string", why:"Sans () on parle de la fonction elle-même : son type est function."},{t:"function function", why:"salut() renvoie la chaîne \"salut\"."},{t:"une erreur", why:"Le code est valide."}]
+    ][t], ["-> n'existe pas : la flèche s'écrit =>, donc erreur de syntaxe.", "add(" + v + ") = " + v + " + undefined = NaN, puis NaN(3) : ce n'est pas une fonction.", "c vaut " + v + " : un nombre ne peut pas être appelé avec ().", "salut est une fonction ; salut() renvoie une chaîne."][t]);
+}});
+
+/* ---------------- 6. SCOPE ---------------- */
+const SCM = (s, h, k, n, z) => ({c:"scope", s, h, k, n, z});
+G.push({c:"scope", f(){
+  const kw = pick(["var","let","const"]), v = R(1,9), outside = Math.random() < .5, n = pick(["a","b","x","total"]);
+  const code = `function init() {\n  if (true) {\n    ${kw} ${n} = ${v};\n  }\n  console.log(${n});\n}\ninit();${outside ? `\nconsole.log(${n});` : ""}`;
+  const other = kw === "var" ? "let" : "var";
+  return execQ(SCM("« Le problème de var », « Boucles var vs let », « const »","var ignore les accolades du if mais reste dans la fonction ; let/const restent dans leur bloc { }.","var a la portée de la fonction (il ignore les blocs) ; let et const meurent à l'accolade fermante.","var : toute la fonction ; let/const : seulement le bloc.","var se promène dans toute la maison ; let reste dans sa pièce."),
+    code, [{code:code.replace(kw, other), why: kw === "var" ? "var traverse le bloc du if : le 1er console.log affiche bien la valeur." : `${kw} reste dans le bloc du if : le console.log de la fonction plante déjà.`},{t:`${v}${outside ? " puis " + v : ""}`, why: outside ? "En dehors de la fonction, la variable n'existe pas." : `${kw} ne traverse pas le bloc du if.`},{t:"undefined", why:"La variable a soit sa valeur, soit n'existe pas."}],
+    `${kw} : ${kw === "var" ? "visible dans toute la fonction, pas au-delà" : "visible seulement dans le bloc du if"}. (Certains éditeurs comme RunJS cachent ce qui est affiché avant une erreur : teste dans la console F12.)`);
+}});
+G.push({c:"scope", f(){
+  const t = pick([0,1,2,3]), v = R(2,9), w = R(10,20);
+  const code = [`console.log(x);\nvar x = ${v};\nconsole.log(x);`, `console.log(y);\nlet y = ${v};`, `var x = ${v};\nfunction f() {\n  console.log(x);\n  var x = ${w};\n}\nf();`, `var n = ${w};\nfunction h() {\n  n = n + 1;\n  var n;\n  return n;\n}\nconsole.log(h(), n);`][t];
+  return execQ(SCM("« var placé en début de fonction », « Utilisation avant déclaration »","La DÉCLARATION var remonte en haut de sa fonction, pas la valeur. let ne s'utilise pas avant sa déclaration.","Les déclarations var sont placées en début de fonction ; console.log(a); var a = 3; est autorisé.","var x remonte (sans valeur) et peut masquer une variable globale.","Le nom est sur la liste dès le début, mais l'élève arrive plus tard."),
+    code, [
+      [{t:`${v} puis ${v}`, why:"À la 1re ligne, x = "+v+" n'a pas encore été exécuté : x vaut undefined."},{t:"une erreur (x n'est pas définie)", why:"Avec var, utiliser avant la déclaration est autorisé (la déclaration remonte)."}],
+      [{t:String(v), why:"Avec let, la variable n'est pas utilisable avant sa déclaration."},{t:"undefined", why:"let ne remonte pas comme var : c'est une erreur, pas undefined."}],
+      [{t:String(v), why:"var x dans f remonte en haut de f et masque le x global."},{t:String(w), why:"x = "+w+" n'est pas encore exécuté au moment du console.log."},{t:"une erreur", why:"Avec var, c'est autorisé."}],
+      [{t:`${w+1} ${w}`, why:"var n remonte : le n de h est local et vaut undefined, donc undefined + 1 = NaN."},{t:`${w+1} ${w+1}`, why:"Le n de h est local : la variable globale n'est pas touchée."},{t:`NaN NaN`, why:"La variable globale n ne change pas."}]
+    ][t],
+    "La déclaration var remonte (valeur undefined) et rend la variable locale dans toute la fonction ; let ne peut pas être utilisé avant.");
+}});
+G.push({c:"scope", f(){
+  const x = R(0,3), mode = pick([0,1]);
+  const code = mode === 0 ? `function f() { compteur = 1; }\nfunction g() { compteur++; }\nf();\n${"g();\n".repeat(x)}console.log(compteur);` : `function f() {\n  ${pick(["var","let","const"])} c = 1;\n}\nf();\nconsole.log(typeof c);`;
+  return execQ(SCM("« Variables globales », « Closures et mutation »","Sans let, const ni var → variable globale. Avec un mot-clé dans une fonction → locale.","Affecter une variable sans let, const ni var crée une variable globale.","Pas de mot-clé = visible partout (à éviter).","Un jouet laissé au milieu du salon : tout le monde peut le prendre."),
+    code, mode === 0 ? [{t:"une erreur (compteur n'est pas définie)", why:"f a créé compteur comme variable globale."},{t:String(x === 0 ? 2 : 1), why: x === 0 ? "g n'est pas appelée." : "g l'a incrémentée à chaque appel."},{t:String(x + 2), why:"Compte bien les appels de g."}]
+      : [{t:"number", why:"c est locale à f : invisible dehors."},{t:"une erreur (c n'est pas définie)", why:"typeof ne plante pas sur une variable inconnue : il renvoie \"undefined\"."},{t:"1", why:"typeof renvoie un type, pas une valeur."}],
+    mode === 0 ? `compteur devient globale (1), puis g l'augmente ${x} fois.` : "c est locale à f ; typeof d'une variable inconnue renvoie \"undefined\".");
+}});
+G.push({c:"scope", f(){
+  const v = R(0,9), t = pick([0,1,2,3]);
+  const code = [`const total = ${v};\ntotal = total + 1;\nconsole.log(total);`, `const k;\nk = ${v};\nconsole.log(k);`, `const x = ${v};\nx++;\nconsole.log(x);`, `const x = ${v};\nconsole.log(x + 1);`][t];
+  return execQ(SCM("« const »","Une const se donne une valeur UNE seule fois, et dès la déclaration.","const marque une variable qui ne peut être initialisée qu'une fois, et elle doit l'être à sa déclaration.","const = valeur fixée pour toujours ; lire ou calculer avec, c'est permis.","Une boîte scellée : on met le jouet dedans une fois pour toutes."),
+    code, t === 3 ? [{t:"une erreur (on ne peut pas réaffecter une const)", why:"x + 1 calcule une valeur sans modifier x : c'est permis."},{t:String(v), why:"On affiche x + 1, pas x."}]
+      : t === 1 ? [{t:String(v), why:"Une const doit avoir sa valeur dès la déclaration : erreur de syntaxe, rien ne s'exécute."},{t:"undefined", why:"const sans valeur est une erreur de syntaxe."},{t:"une erreur (on ne peut pas réaffecter une const)", why:"L'erreur arrive avant : const sans valeur, c'est une erreur de syntaxe."}]
+      : [{t:String(v+1), why:"On ne peut pas réaffecter une const (= ou ++)."},{t:String(v), why:"L'erreur arrive avant le console.log."},{t:"une erreur de syntaxe (rien ne s'exécute)", why:"La syntaxe est correcte : l'erreur arrive à l'exécution, sur la réaffectation."}], "Réaffecter (=, ++) une const est interdit ; une const sans valeur est une erreur de syntaxe ; l'utiliser dans un calcul est permis.");
+}});
+G.push({c:"scope", f(){
+  const n = R(0,9), th = R(2,7), a = R(1,5), b = R(10,20), loop = Math.random() < .4;
+  const code = loop ? `let n = 0;\nfor (let i = 0; i < ${R(2,4)}; i++)\n  n += ${a};\n  n *= ${R(2,5)};\nconsole.log(n);`
+                    : `let n = ${n}, b = 0;\nif (n > ${th})\n  b += ${a};\n  b += ${b};\nconsole.log(b);`;
+  const braced = loop ? code.replace(/\)\n  n \+= (\d+);\n  n \*= (\d+);/, ") {\n  n += $1;\n  n *= $2;\n}") : code.replace(/\)\n  b \+= (\d+);\n  b \+= (\d+);/, ") {\n  b += $1;\n  b += $2;\n}");
+  return execQ(SCM("« Instructions de bloc » (+ « if », « for »)","Sans accolades, le if / for ne contrôle que l'instruction SUIVANTE. L'indentation ne compte pas.","Les accolades sont optionnelles s'il n'y a qu'une instruction ; il vaut mieux toujours les mettre (bug « goto fail »).","Seules les accolades comptent, pas les espaces.","Le garde ne surveille que la première personne derrière lui."),
+    code, [{code:braced, why:"L'indentation ne met PAS la 2e ligne dans le bloc."},{t:"0", why:"La ligne hors du bloc s'exécute toujours."}], "Seule la première instruction dépend du if / for ; la suivante s'exécute une seule fois, quoi qu'il arrive.");
+}});
+G.push({c:"scope", f(){
+  const v = R(2,9), t = Math.random() < .5;
+  const code = t ? `function f() {\n  return\n    ${v};\n}\nconsole.log(f());` : `let f = x => x * ${v}\nlet a = f\n(f(2))\nconsole.log(a)`;
+  return execQ(SCM("« Points-virgules et ASI »","JS insère parfois un ; en fin de ligne… mais pas toujours là où on croit.","L'ASI insère automatiquement des ; ; la grammaire est ambiguë (exemple let a = f puis (f(3))) : toujours écrire ;.","Un return seul en fin de ligne renvoie undefined ; une ligne qui commence par ( se colle à la précédente.","Sans point final, la phrase suivante peut se coller à la précédente."),
+    code, t ? [{t:String(v), why:"Un ; est inséré juste après return."}] : [{t:String(2*v), why:"Sans ; après f, la ligne (f(2)) appelle f une 2e fois."},{t:"la fonction", why:"Les parenthèses de la ligne suivante appellent f."}], t ? "return seul sur sa ligne → undefined." : `a = f(f(2)) = f(${2*v}) = ${2*v*v}.`);
+}});
+G.push({c:"scope", f(){
+  const kw = pick(["var","let"]), cap = R(0,2), n = R(3,4);
+  const code = `let f;\nfor (${kw} i = 0; i < ${n}; i++) {\n  if (i == ${cap}) f = () => i;\n}\nconsole.log(f()${kw === "var" ? ", i" : ""});`;
+  return execQ(SCM("« Boucles var vs let » (js-scope.html) + « Closures » (js-function.html)","Avec var, un SEUL i pour toute la boucle ; avec let, un i neuf à chaque tour. La closure lit i au moment de l'appel.","Avec var, l'index survit après la boucle ; avec let, il meurt à l'accolade fermante.","var = un seul i partagé ; let = une copie par tour.","var = un seul tableau blanc qu'on efface ; let = une feuille neuve par tour."),
+    code, [{code:code.replace(`${kw} i`, kw === "var" ? "let i" : "var i").replace(", i)", ")"), why:`Avec ${kw === "var" ? "var il n'y a qu'un seul i, partagé par tous les tours" : "let chaque tour a son propre i"}.`},{t:kw === "var" ? `${cap} ${n}` : String(n), why: kw === "var" ? "Avec var, la closure lit la valeur finale de i." : "Avec let, la closure garde le i de son tour."}],
+    kw === "var" ? `Un seul i, qui vaut ${n} à la fin.` : `La closure a capturé le i du tour ${cap}.`);
+}});
+G.push({c:"scope", f(){
+  const v = R(2,20), t = pick([0,1,2]);
+  const code = [`(function () {\n  var x = ${v};\n  console.log(x);\n})();\nconsole.log(typeof x);`, `function () {\n  console.log("hi");\n}();`, `(function () {\n  secret = ${v};\n})();\nconsole.log(secret);`][t];
+  return execQ(SCM("« IIFE » (+ « Variables globales »)","Une IIFE est entourée de ( ) puis appelée ; ses variables (déclarées) restent dedans.","IIFE : fonction anonyme appelée immédiatement, entre ( ) ou nommée sinon erreur de syntaxe ; elle cache ses variables.","(function () { … })(); crée une portée privée.","Une boîte qui fait son tour de magie et se referme avec tout dedans."),
+    code, [
+      [{t:`${v} puis number`, why:"x est caché dans l'IIFE : typeof renvoie \"undefined\"."},{t:`${v} puis une erreur (x n'est pas définie)`, why:"typeof ne plante pas sur une variable inconnue."},{t:"undefined", why:"L'IIFE est bien appelée et affiche x d'abord."}],
+      [{t:"hi", why:"Sans ( ) autour (ou sans nom), c'est une erreur de syntaxe."},{t:"rien", why:"Il y a une erreur de syntaxe."},{t:"undefined", why:"Le programme ne démarre pas."}],
+      [{t:"une erreur (secret n'est pas définie)", why:"Sans var/let/const, secret devient globale : visible dehors."},{t:"undefined", why:"L'IIFE a bien été exécutée et a affecté secret."},{t:"une erreur de syntaxe (rien ne s'exécute)", why:"Les ( ) autour rendent la syntaxe valide."}]
+    ][t], t === 1 ? "Sans ( ) autour, function () {…}() est une erreur de syntaxe." : t === 0 ? "L'IIFE affiche x, puis x n'est pas visible dehors." : "secret n'est pas déclarée : elle devient globale, visible dehors.");
+}});
+
+
+const CH = {web:"1. Internet & Web", html:"2. HTML", css:"3. CSS", js:"4. JavaScript", fn:"5. Fonctions", scope:"6. Scope & bizarreries"};
+const URLS = {web:"web.html", html:"html.html", css:"css.html", js:"javascript.html", fn:"js-function.html", scope:"js-scope.html"};
+const BASE = "https://forax.github.io/course/progweb/";
+const QUOTA = {web:5, html:5, css:6, js:9, fn:8, scope:7};
+const L = "ABCDEFG";
+let deck = [], submitted = false, mode = "exam", timer = null, endAt = 0;
+const answers = {}, vAnswers = {}, vChecked = {};
+const corr = x => Array.isArray(x.a) ? x.a : [x.a];
+const sel = (store, key) => store[key] || [];
+const isOk = (x, chosen) => { const c = corr(x); return chosen.length === c.length && c.every(j => chosen.includes(j)); };
+
+/* ---- fabrication des questions ---- */
+function genItem(g){
+  const q = g.f(); let v = g.f(), t = 0;
+  while (t++ < 15 && v.code === q.code && v.q === q.q && v.o.join() === q.o.join()) v = g.f();
+  delete v.v; q.v = v; q.gen = true; return q;
+}
+function pool(c){
+  return [...HQ.map((q,i)=>({k:"h", i})).filter(e => HQ[e.i].c === c), ...G.map((g,i)=>({k:"g", i})).filter(e => G[e.i].c === c)];
+}
+const make = e => e.k === "h" ? HQ[e.i] : genItem(G[e.i]);
+function drawExam(){
+  const out = [];
+  for (const [c, n] of Object.entries(QUOTA)) out.push(...shuf(pool(c)).slice(0, n).map(make));
+  return shuf(out);
+}
+function drawChapter(c, n = 15){
+  const p = shuf(pool(c)), out = p.slice(0, n).map(make);
+  const gens = G.map((g,i)=>i).filter(i => G[i].c === c);
+  while (out.length < n) out.push(genItem(G[pick(gens)]));
+  return out;
+}
+function start(m){
+  mode = m; submitted = false; [answers,vAnswers,vChecked].forEach(o=>{for(const k in o) delete o[k];});
+  deck = m === "exam" ? drawExam() : m === "fixed" ? HQ.slice() : drawChapter(m.split(":")[1]);
+  clearInterval(timer); timer = null;
+  if (m === "exam") { endAt = Date.now() + 60*60*1000; timer = setInterval(tick, 1000); }
+  const s = document.getElementById("score"); s.style.display = "none"; s.dataset.warned = "";
+  render(); tick(); window.scrollTo({top:0});
+}
+function tick(){
+  const el = document.getElementById("timer"); if (!el) return;
+  if (mode !== "exam" || submitted) { el.textContent = ""; return; }
+  const left = Math.max(0, endAt - Date.now()), mm = Math.floor(left/60000), ss = Math.floor(left/1000)%60;
+  el.textContent = left ? `⏱ ${mm}:${String(ss).padStart(2,"0")}` : "⏱ Temps écoulé !";
+  el.classList.toggle("late", left < 5*60*1000);
+}
+
+/* ---- affichage ---- */
+function buildBar(){
+  const bar = document.getElementById("bar"); bar.innerHTML = "";
+  const mk = (key,label) => { const b=document.createElement("button"); b.className="chip"+(mode===key?" on":""); b.textContent=label; b.onclick=()=>start(key); bar.appendChild(b); };
+  mk("exam","🎲 Examen blanc (40 au hasard)");
+  mk("fixed","📌 Les 40 questions fixes");
+  Object.entries(CH).forEach(([k,v])=>mk("chap:"+k, "Entraînement " + v));
+  const t=document.createElement("span"); t.className="timer"; t.id="timer"; bar.appendChild(t);
+  const p=document.createElement("span"); p.className="progress"; p.id="progress"; bar.appendChild(p);
+}
+function updateProgress(){ document.getElementById("progress").textContent = `${deck.filter((_,i)=>sel(answers,i).length).length} / ${deck.length} répondues`; }
+function optionsHTML(name, x, chosen, reveal){
+  const c = corr(x), type = x.m ? "checkbox" : "radio";
+  return x.o.map((opt,k)=>{
+    let cls="opt";
+    if(reveal){ if(c.includes(k)) cls+=" good"; else if(chosen.includes(k)) cls+=" bad"; }
+    return `<label class="${cls}"><input type="${type}" name="${name}" value="${k}" ${chosen.includes(k)?"checked":""} ${reveal?"disabled":""}><span><b>${L[k]}.</b> ${opt}</span></label>`;
+  }).join("");
+}
+function corrHTML(x, chosen, title){
+  const c = corr(x);
+  const verdict = !chosen.length ? `<span class="verdict ko">Pas répondu.</span>` : isOk(x, chosen) ? `<span class="verdict ok">Bonne réponse !</span>` : `<span class="verdict ko">Raté.</span>`;
+  const list = x.w.map((w,k)=>`<li>${c.includes(k)?"✅":"❌"} <b>${L[k]}.</b> ${w}</li>`).join("");
+  return `<div class="corr"><h4>${title} — ${verdict} Réponse : ${c.map(k=>L[k]).join(" + ")}</h4>
+    <div class="lbl">1. Réponse</div><ul>${list}</ul>
+    <div class="lbl">2. Ce que dit le cours</div><p>${x.k}</p>
+    <div class="lbl">3. Explication</div><p>${x.n}</p>
+    <div class="lbl">4. Explication novice</div><p>${x.z}</p></div>`;
+}
+const club = x => x.m ? ` <span class="club" title="Zéro, une ou plusieurs bonnes réponses">♣ plusieurs réponses possibles</span>` : "";
+function bind(d, name, x, store, key, after){
+  d.querySelectorAll(`input[name="${name}"]`).forEach(inp=>inp.onchange=()=>{
+    store[key] = x.m ? [...d.querySelectorAll(`input[name="${name}"]:checked`)].map(e=>+e.value) : [+inp.value];
+    if(after) after();
+  });
+}
+function render(){
+  buildBar();
+  const box=document.getElementById("quiz"); box.innerHTML="";
+  deck.forEach((it,i)=>{
+    const d=document.createElement("div"); d.className="q";
+    let h=`<div class="tag">${CH[it.c]}${it.gen ? " · question générée" : ""}</div><h3>${i+1}. ${it.q}${club(it)}</h3>`;
+    if(it.code) h+=`<pre><code class="c-main"></code></pre>`;
+    h+=optionsHTML("q"+i, it, sel(answers,i), submitted);
+    h+=`<div class="slides">📖 <b>Diapos à regarder</b> : <a href="${BASE+URLS[it.c]}" target="_blank">${URLS[it.c]}</a> — ${it.s}</div>`;
+    h+=`<button class="hintbtn">💡 Indice</button><div class="hint">${it.h}</div>`;
+    if(submitted){
+      h+=corrHTML(it, sel(answers,i), "Corrigé");
+      const v=it.v, vc=vChecked[i];
+      h+=`<div class="variant"><div class="tag">Variante — mêmes compétences</div><h3>${v.q}${club(v)}</h3>`;
+      if(v.code) h+=`<pre><code class="c-var"></code></pre>`;
+      h+=optionsHTML("v"+i, v, sel(vAnswers,i), vc);
+      h+= vc ? corrHTML(v, sel(vAnswers,i), "Corrigé de la variante") : `<button class="checkbtn">Vérifier la variante</button>`;
+      h+=`</div>`;
+    }
+    d.innerHTML=h;
+    if(it.code) d.querySelector(".c-main").textContent=it.code;
+    if(submitted && it.v.code) d.querySelector(".c-var").textContent=it.v.code;
+    d.querySelector(".hintbtn").onclick=()=>d.querySelector(".hint").classList.toggle("show");
+    bind(d, "q"+i, it, answers, i, updateProgress);
+    if(submitted) bind(d, "v"+i, it.v, vAnswers, i);
+    const cb=d.querySelector(".checkbtn");
+    if(cb) cb.onclick=()=>{ vChecked[i]=true; const y=window.scrollY; render(); window.scrollTo(0,y); };
+    box.appendChild(d);
+  });
+  updateProgress();
+}
+function showScore(){
+  const good=deck.filter((q,i)=>isOk(q, sel(answers,i))).length, pct=Math.round(100*good/deck.length), per={};
+  deck.forEach((q,i)=>{const c=q.c; per[c]=per[c]||[0,0]; per[c][1]++; if(isOk(q, sel(answers,i))) per[c][0]++;});
+  const rows=Object.entries(per).map(([c,[g,t]])=>`<tr><td>${CH[c]}</td><td>${g} / ${t}</td></tr>`).join("");
+  const note=(good*20/deck.length).toLocaleString("fr-FR",{maximumFractionDigits:1});
+  const used = mode === "exam" ? ` · temps utilisé : ${Math.round((60*60*1000 - Math.max(0,endAt-Date.now()))/60000)} min` : "";
+  const msg = pct>=85?"Excellent, tu maîtrises !":pct>=65?"Bien ! Fais les variantes des questions ratées.":"Il faut encore réviser : lis les corrigés, puis fais les variantes.";
+  const s=document.getElementById("score"); s.style.display="block";
+  s.innerHTML=`<h2>Score : ${good} / ${deck.length} — ${note} / 20</h2><p>${msg}${used}</p><table>${rows}</table><p style="margin-top:10px"><button class="main" onclick="start(mode)">🎲 Nouveau tirage</button></p>`;
+  s.scrollIntoView({behavior:"smooth"});
+}
+document.getElementById("submit").onclick=()=>{
+  const s=document.getElementById("score"), missing=deck.filter((_,i)=>!sel(answers,i).length).length;
+  if(missing && !submitted && s.dataset.warned!=="1"){
+    s.style.display="block"; s.dataset.warned="1";
+    s.innerHTML=`<p>Il reste <b>${missing}</b> question(s) sans réponse. Clique encore sur « Voir mes résultats » pour corriger quand même.</p>`;
+    s.scrollIntoView({behavior:"smooth"}); return;
+  }
+  submitted=true; tick(); render(); showScore();
+};
+document.getElementById("reset").onclick=()=>start(mode);
+start("exam");
+</script>
+</body>
+</html>

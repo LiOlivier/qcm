@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QCM – Programmation Web (Forax) – chapitres 1 à 6</title>
+<style>
+  :root{
+    --bg:#f6f5f2; --card:#fff; --ink:#1d1d1f; --muted:#6b6b70; --line:#e3e1dc;
+    --accent:#3b5bdb; --ok:#2f9e44; --okbg:#ebfbee; --ko:#e03131; --kobg:#fff5f5;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  .wrap{max-width:820px;margin:0 auto;padding:28px 18px 80px}
+  h1{font-size:1.6rem;margin:0 0 4px}
+  .sub{color:var(--muted);margin:0 0 20px}
+  .bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line);margin-bottom:18px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-size:.85rem;cursor:pointer}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .progress{margin-left:auto;font-size:.85rem;color:var(--muted)}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:14px}
+  .q .tag{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--accent);font-weight:600}
+  .q h3{font-size:1rem;margin:4px 0 10px;font-weight:600}
+  pre{background:#1e1e24;color:#e9e9ef;padding:12px 14px;border-radius:8px;overflow-x:auto;font-size:.86rem;margin:0 0 12px}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace}
+  label.opt{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer}
+  label.opt:hover{border-color:#c5c3bd}
+  label.opt input{margin-top:4px}
+  label.opt.good{background:var(--okbg);border-color:var(--ok)}
+  label.opt.bad{background:var(--kobg);border-color:var(--ko)}
+  .expl{display:none;margin-top:10px;padding:10px 12px;border-left:3px solid var(--accent);background:#f1f3ff;border-radius:4px;font-size:.92rem}
+  .done .expl{display:block}
+  .verdict{font-weight:700;margin-right:6px}
+  .verdict.ok{color:var(--ok)} .verdict.ko{color:var(--ko)}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+  button.main{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:12px 20px;font-size:1rem;cursor:pointer}
+  button.sec{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 20px;font-size:1rem;cursor:pointer}
+  .score{display:none;background:var(--card);border:2px solid var(--accent);border-radius:12px;padding:18px;margin-bottom:18px}
+  .score h2{margin:0 0 8px}
+  .score table{border-collapse:collapse;width:100%;font-size:.9rem}
+  .score td{padding:4px 6px;border-bottom:1px solid var(--line)}
+  .score td:last-child{text-align:right;font-weight:600}
+  .hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>QCM – Programmation Web</h1>
+  <p class="sub">Cours de Rémi Forax · chapitres 1 à 6 (Internet &amp; Web, HTML, CSS, JavaScript, Fonctions, Scope &amp; bizarreries). Réponds à tout, puis clique sur <b>Voir mes résultats</b> : la correction s'affiche à la fin.</p>
+
+  <div class="bar" id="bar"></div>
+  <div class="score" id="score"></div>
+  <div id="quiz"></div>
+
+  <div class="actions">
+    <button class="main" id="submit">Voir mes résultats</button>
+    <button class="sec" id="reset">Recommencer (questions mélangées)</button>
+  </div>
+</div>
+
+<script>
+const CH = {
+  web:"1. Internet & Web", html:"2. HTML", css:"3. CSS",
+  js:"4. JavaScript", fn:"5. Fonctions", scope:"6. Scope & bizarreries"
+};
+
+const Q = [
+/* ================= 1. INTERNET & WEB ================= */
+{c:"web", q:"Quelle suite de protocoles relie les réseaux qui forment Internet ?",
+ o:["HTTP/HTML","TCP/IP","DNS/MIME","FTP/SMTP"], a:1,
+ e:"Internet = un système mondial de réseaux interconnectés qui utilisent la suite TCP/IP."},
+{c:"web", q:"Que fait la commande <code>ping</code> ?",
+ o:["Elle télécharge une page web","Elle envoie des paquets ICMP (de contrôle) à une adresse IP","Elle demande au DNS l'IP d'un nom","Elle affiche le chemin des routeurs traversés"], a:1,
+ e:"ping envoie des paquets ICMP. Le chemin des routeurs, c'est traceroute ; l'IP d'un nom, c'est host."},
+{c:"web", q:"Que se passe-t-il avec le TTL (Time To Live) d'un paquet IP ?",
+ o:["Il augmente de 1 à chaque routeur","Il diminue de 1 à chaque routeur ; à 0 le paquet est détruit et une erreur ICMP « Time Exceeded » est renvoyée","C'est le temps en millisecondes avant expiration","Il est fixé à 255 par tous les OS"], a:1,
+ e:"Le TTL est décrémenté à chaque routeur. À 0 : paquet jeté + ICMP Time Exceeded vers l'émetteur. Ça permet d'estimer le nombre de routeurs traversés."},
+{c:"web", q:"Quelle est la valeur initiale du TTL sous Linux/macOS et sous Windows ?",
+ o:["64 et 128","128 et 64","32 et 64","255 et 128"], a:0,
+ e:"64 pour Linux/macOS, 128 pour Windows."},
+{c:"web", q:"À quoi sert le DNS ?",
+ o:["Chiffrer les échanges","Traduire un nom de machine (ex. www.google.fr) en adresse IP ; c'est un système de noms hiérarchique et distribué","Router les paquets","Définir les types de contenu"], a:1,
+ e:"Domain Name System : annuaire hiérarchique et distribué. La commande host interroge le DNS."},
+{c:"web", q:"Quelle commande interroge les registres pour connaître le propriétaire et les dates de création/expiration d'un nom de domaine ?",
+ o:["host","traceroute","whois","nc"], a:2,
+ e:"whois interroge les registres qui gèrent les noms de domaine et les blocs d'adresses IP."},
+{c:"web", q:"Quel outil montre le chemin (les sauts de routeur en routeur) que prennent les données ?",
+ o:["ping","traceroute","wget","whois"], a:1,
+ e:"traceroute affiche chaque saut (hop). Le routage se fait de proche en proche."},
+{c:"web", q:"Qu'apporte TCP par rapport à IP ?",
+ o:["Il donne l'illusion que deux machines sont directement connectées l'une à l'autre","Il traduit les noms en IP","Il chiffre les données","Il décrit la mise en page"], a:0,
+ e:"TCP (Transmission Control Protocol) fait croire aux machines qu'elles sont directement reliées (connexion fiable, ordonnée)."},
+{c:"web", q:"Dans l'URL <code>https://www.google.fr/images/branding</code>, que représente <code>/images/branding</code> ?",
+ o:["Le protocole","Le nom d'hôte","Le chemin (URI) de la ressource","Le port"], a:2,
+ e:"Protocole = https, nom d'hôte = www.google.fr, chemin (URI) = /images/branding."},
+{c:"web", q:"Quelle version de HTTP a rendu l'en-tête <code>Host</code> obligatoire et introduit les connexions persistantes ?",
+ o:["HTTP/0.9","HTTP/1.0","HTTP/1.1","HTTP/2"], a:2,
+ e:"HTTP/1.1 (1997). 0.9 = GET seulement sans code ; 1.0 = en-têtes, codes, types de contenu."},
+{c:"web", q:"Pourquoi l'en-tête <code>Host</code> est-il nécessaire ?",
+ o:["Pour indiquer l'IP du client","Parce qu'un même serveur peut héberger plusieurs sites","Pour le chiffrement","Pour indiquer la taille de la réponse"], a:1,
+ e:"Sans Host, forax.github.io renvoie 404 ; avec Host: forax.github.io en HTTP/1.1, on obtient 200 OK."},
+{c:"web", q:"Comment est structurée une réponse HTTP ?",
+ o:["Corps, puis en-têtes, puis ligne de statut","Ligne de statut (ex. HTTP/1.1 200 OK), en-têtes clé: valeur, une ligne vide, puis le corps","Uniquement du HTML","En-têtes en JSON puis corps"], a:1,
+ e:"Ligne de statut → en-têtes « clé: valeur » → ligne vide → corps (page, image…)."},
+{c:"web", q:"Que signifie le code de statut 404 ?",
+ o:["OK","Moved Permanently","Unauthorized","Not Found"], a:3,
+ e:"200 OK, 301 Moved Permanently, 400 Bad Request, 401 Unauthorized, 404 Not Found."},
+{c:"web", q:"Que signifie le code 301 ?",
+ o:["Bad Request","Moved Permanently","Not Found","OK"], a:1,
+ e:"301 = la ressource a déménagé définitivement."},
+{c:"web", q:"Que contient l'en-tête <code>Content-Type</code> ?",
+ o:["La taille du corps en octets","Le type du corps au format MIME (ex. text/html; charset=utf-8)","La date de modification","Le nom du serveur"], a:1,
+ e:"Content-Type = type MIME. Content-Length = taille en octets."},
+{c:"web", q:"D'où vient à l'origine le format MIME ?",
+ o:["Du HTML","Des e-mails, puis réutilisé par HTTP","Du DNS","De CSS"], a:1,
+ e:"MIME = Multipurpose Internet Mail Extensions, d'abord pour le mail."},
+{c:"web", q:"Quel est le type MIME d'une image JPEG ?",
+ o:["image/jpg","application/jpeg","image/jpeg","text/jpeg"], a:2,
+ e:"image/jpeg. Autres exemples : video/mp4, application/msword, text/plain."},
+{c:"web", q:"Combien de requêtes HTTP faut-il pour afficher une page avec 3 images, 1 feuille CSS et 1 script ?",
+ o:["1","4","6","Ça dépend du DNS"], a:2,
+ e:"1 pour le HTML + 1 par ressource (3 images + 1 CSS + 1 script) = 6."},
+{c:"web", q:"Comment fonctionne HTTPS ?",
+ o:["Tout est chiffré avec la clé publique du serveur","Chiffrement asymétrique pour échanger une clé symétrique, puis le reste est chiffré avec cette clé symétrique","Il n'y a pas de chiffrement, seulement une signature","Le mot de passe de l'utilisateur sert de clé"], a:1,
+ e:"Asymétrique (clé publique/privée) pour s'échanger une clé secrète, puis symétrique (plus rapide) pour la suite."},
+{c:"web", q:"À quoi sert un certificat (signé par une autorité de certification, CA) ?",
+ o:["À accélérer le chargement","À prouver que la clé publique appartient bien au serveur visé (lien nom de domaine ↔ clé publique)","À stocker les cookies","À compresser les images"], a:1,
+ e:"Le navigateur connaît les clés publiques des CA reconnues et vérifie la signature du certificat."},
+
+/* ================= 2. HTML ================= */
+{c:"html", q:"Que signifie HTML ?",
+ o:["HyperText Markup Language","HighText Machine Language","HyperTransfer Markup Language","Hyperlink Text Management Language"], a:0,
+ e:"HyperText Markup Language : le langage de balises standard des pages web."},
+{c:"html", q:"En quelle année est sorti HTML 5 (selon le cours) ?",
+ o:["1999","2000","2014","2021"], a:2,
+ e:"1991 HTML, 1995 2.0, 1997 3.2, 1999 4.01, 2000 XHTML 1.0, 2014 HTML 5."},
+{c:"html", q:"Comment afficher le caractère <code>&lt;</code> dans une page HTML ?",
+ o:["\\<","&amp;lt;","&lt;&lt;","%3C"], a:1,
+ e:"Entités : &amp;lt; (<), &amp;gt; (>), &amp;amp; (&), &amp;nbsp; (espace insécable)."},
+{c:"html", q:"Quelle entité correspond à un espace insécable ?",
+ o:["&amp;space;","&amp;nbsp;","&amp;sp;","&amp;amp;"], a:1,
+ e:"&amp;nbsp; = non-breaking space."},
+{c:"html", q:"Comment écrit-on un commentaire HTML ?",
+ o:["// commentaire","/* commentaire */","&lt;!-- commentaire --&gt;","# commentaire"], a:2,
+ e:"&lt;!-- ... --&gt; ; il n'est pas affiché."},
+{c:"html", q:"Que signifie DOM ?",
+ o:["Document Object Model : l'arbre des éléments du document","Data Output Module","Domain Object Map","Dynamic Online Markup"], a:0,
+ e:"Les éléments forment un arbre ; sa représentation s'appelle le DOM."},
+{c:"html", q:"Ce code est-il valide ?", code:"<b>qui <i>ne</b> marche pas</i>",
+ o:["Oui, c'est valide","Non : les éléments entrelacés (qui se chevauchent) sont interdits, on ne peut pas construire d'arbre","Oui en HTML5 uniquement","Oui si on ajoute un DOCTYPE"], a:1,
+ e:"Interdit. Les navigateurs tolèrent souvent, mais d'autres outils (robots d'indexation…) non."},
+{c:"html", q:"Laquelle de ces balises n'a PAS de balise fermante ?",
+ o:["&lt;p&gt;","&lt;b&gt;","&lt;br&gt;","&lt;section&gt;"], a:2,
+ e:"&lt;br&gt; (saut de ligne) est un élément vide. En XHTML on écrit &lt;br/&gt;."},
+{c:"html", q:"Quel est le DOCTYPE de HTML 5 ?",
+ o:["&lt;!DOCTYPE html&gt;","&lt;!DOCTYPE HTML5&gt;","&lt;!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 5//EN\"&gt;","&lt;html version=\"5\"&gt;"], a:0,
+ e:"Simplement &lt;!DOCTYPE html&gt;, placé avant la balise html."},
+{c:"html", q:"Où se placent <code>&lt;title&gt;</code> et <code>&lt;meta charset=\"UTF-8\"&gt;</code> ?",
+ o:["Dans &lt;body&gt;","Dans &lt;head&gt;","Après &lt;/html&gt;","Dans &lt;footer&gt;"], a:1,
+ e:"&lt;head&gt; contient les propriétés du document (titre, métadonnées)."},
+{c:"html", q:"Quelles balises mettent du texte en gras ?",
+ o:["&lt;i&gt; ou &lt;em&gt;","&lt;b&gt; ou &lt;strong&gt;","&lt;s&gt; ou &lt;small&gt;","&lt;sup&gt; ou &lt;sub&gt;"], a:1,
+ e:"b/strong = gras ; i/em = italique ; s = barré ; sup/sub = exposant/indice."},
+{c:"html", q:"Comment écrire N₂ (le 2 en indice) ?",
+ o:["N&lt;sup&gt;2&lt;/sup&gt;","N&lt;sub&gt;2&lt;/sub&gt;","N&lt;small&gt;2&lt;/small&gt;","N&lt;low&gt;2&lt;/low&gt;"], a:1,
+ e:"sub = subscript (indice), sup = superscript (exposant)."},
+{c:"html", q:"Quelle balise affiche du texte préformaté (style machine à écrire, espaces conservés) ?",
+ o:["&lt;code&gt;","&lt;pre&gt;","&lt;blockquote&gt;","&lt;p&gt;"], a:1,
+ e:"&lt;pre&gt; ; &lt;blockquote&gt; = citation ; &lt;code&gt; = code dans le texte."},
+{c:"html", q:"Quelle balise crée une liste numérotée (ordonnée) ?",
+ o:["&lt;ul&gt;","&lt;ol&gt;","&lt;dl&gt;","&lt;li&gt;"], a:1,
+ e:"ol = ordered list, ul = unordered list, li = list item."},
+{c:"html", q:"Dans une liste de définitions <code>&lt;dl&gt;</code>, quelles balises utilise-t-on ?",
+ o:["&lt;li&gt; et &lt;dd&gt;","&lt;dt&gt; (terme) et &lt;dd&gt; (définition)","&lt;th&gt; et &lt;td&gt;","&lt;dt&gt; et &lt;li&gt;"], a:1,
+ e:"dt = definition term, dd = definition data."},
+{c:"html", q:"Dans un tableau, que signifient <code>tr</code> et <code>td</code> ?",
+ o:["table row (ligne) et table data (cellule)","table root et table div","title row et title data","text row et text data"], a:0,
+ e:"table > tr > td. th = cellule d'en-tête ; thead/tbody = groupes en-tête/corps."},
+{c:"html", q:"Comment faire un lien vers l'ancre <code>id=\"foo\"</code> de la même page ?",
+ o:["&lt;a href=\"foo\"&gt;","&lt;a href=\"#foo\"&gt;","&lt;a id=\"#foo\"&gt;","&lt;a link=\"foo\"&gt;"], a:1,
+ e:"Cible : &lt;a id=\"foo\"&gt;, lien : &lt;a href=\"#foo\"&gt;. Combiné : href=\"http://…/page.html#foo\"."},
+{c:"html", q:"À quoi sert l'attribut <code>alt</code> de <code>&lt;img&gt;</code> ?",
+ o:["Indiquer la taille","Texte alternatif lu par les clients non graphiques (ex. lecteurs braille)","Lien vers l'image haute résolution","Animer l'image"], a:1,
+ e:"alt = texte alternatif, important pour l'accessibilité."},
+{c:"html", q:"Quel format d'image est vectoriel ?",
+ o:["PNG","GIF","JPEG","SVG"], a:3,
+ e:"SVG = vectoriel. PNG = bitmap sans perte ; GIF = sans perte (avec perte si palette réduite) ; JPEG = avec perte."},
+{c:"html", q:"Quel format bitmap compresse AVEC perte ?",
+ o:["PNG","JPEG","SVG","Aucun"], a:1,
+ e:"JPEG compresse avec perte, PNG sans perte."},
+{c:"html", q:"Quelle balise permet d'inclure un autre document HTML dans la page ?",
+ o:["&lt;include&gt;","&lt;frame&gt;","&lt;iframe&gt;","&lt;embed-html&gt;"], a:2,
+ e:"&lt;iframe src=\"…\" width=\"…\" height=\"…\"&gt;."},
+{c:"html", q:"Qui gère les couleurs, polices et la mise en page (ordinateur vs smartphone) ?",
+ o:["HTML","CSS","HTTP","Le DOCTYPE"], a:1,
+ e:"HTML ne gère pas le style : c'est le rôle de CSS."},
+
+/* ================= 3. CSS ================= */
+{c:"css", q:"Quelles sont les 3 façons d'appliquer du CSS ?",
+ o:["Attribut style, balise &lt;style&gt; dans le head, fichier .css externe avec &lt;link&gt;","Uniquement avec un fichier .css","&lt;css&gt;, &lt;design&gt; et &lt;link&gt;","Attribut class, attribut id, attribut name"], a:0,
+ e:"style=\"…\" (une balise), &lt;style&gt; (tout le document), &lt;link rel=\"stylesheet\" href=\"x.css\"&gt; (plusieurs pages)."},
+{c:"css", q:"Quelle est la différence entre <code>id</code> et <code>class</code> ?",
+ o:["Aucune","id est unique dans la page (sélecteur #), class peut être partagée (sélecteur .)","class est unique (#), id est partagé (.)","id ne s'utilise qu'en JavaScript"], a:1,
+ e:"li#important cible l'élément d'id important ; li.important cible ceux de classe important."},
+{c:"css", q:"Que cible le sélecteur <code>div p</code> ?",
+ o:["Les p dont le père direct est un div","Les p qui ont un div comme ancêtre (descendants)","Les div et les p","Le premier p d'un div"], a:1,
+ e:"Espace = descendant (ancêtre quelconque). « div > p » = enfant direct."},
+{c:"css", q:"Que cible <code>ul &gt; li</code> ?",
+ o:["Les li dont le père direct est un ul","Tous les li descendants d'un ul","Les ul qui contiennent un li","Le li suivant un ul"], a:0,
+ e:"> = enfant direct."},
+{c:"css", q:"Que cible <code>input[type=\"text\"]</code> ?",
+ o:["Les input de classe text","Les input dont l'attribut type vaut \"text\"","Les input ayant un attribut type quel qu'il soit","Les input d'id text"], a:1,
+ e:"E[foo] = a l'attribut ; E[foo=\"val\"] = l'attribut vaut val."},
+{c:"css", q:"<code>::first-letter</code> est un… ; <code>:first-child</code> est une…",
+ o:["pseudo-classe ; pseudo-élément","pseudo-élément ; pseudo-classe","sélecteur d'attribut ; sélecteur d'id","les deux sont des pseudo-classes"], a:1,
+ e:"::first-letter / ::first-line = pseudo-éléments (une partie d'un élément). :first-child, :hover… = pseudo-classes (un état/une position)."},
+{c:"css", q:"Avec ce CSS, de quelle couleur est la première lettre du paragraphe ?", code:"p { color: green; }\np::first-line { color: red; }\np::first-letter { color: blue; }",
+ o:["Vert","Rouge","Bleu","Noir"], a:2,
+ e:"Première lettre en bleu, reste de la première ligne en rouge, le reste en vert."},
+{c:"css", q:"Quelle pseudo-classe s'applique quand la souris survole un lien ?",
+ o:["a:link","a:visited","a:hover","a:active"], a:2,
+ e:":link = non visité, :visited = visité, :hover = survol, :active = pendant le clic."},
+{c:"css", q:"Avec <code>body { color: blue; }</code> et <code>li { color: green; }</code>, de quelle couleur est un <code>&lt;li&gt;</code> ?",
+ o:["Bleu, car body est parent","Vert","Noir","Mélange des deux"], a:1,
+ e:"Cascade : les sélecteurs sont appliqués dans l'ordre, puis les styles se propagent (héritage) aux sous-éléments. Un style défini sur li l'emporte sur celui hérité du body."},
+{c:"css", q:"Laquelle de ces écritures n'est PAS une couleur blanche valide ?",
+ o:["white","rgb(255, 255, 255)","rgb(100%, 100%, 100%)","#FFFFFFF"], a:3,
+ e:"#FFFFFF a 6 chiffres hexadécimaux ; #FFFFFFF (7) est invalide."},
+{c:"css", q:"Avec la police par défaut, combien vaut <code>1em</code> ?",
+ o:["10 px","12 px","16 px","1 % de l'écran"], a:2,
+ e:"em est proportionnel à la fonte courante : 16 px par défaut. Les unités physiques (mm, cm, in) sont déconseillées."},
+{c:"css", q:"Pourquoi finir <code>font-family</code> par un nom générique (sans-serif, serif, monospace) ?",
+ o:["C'est obligatoire syntaxiquement","Il fonctionne quelles que soient les polices installées, c'est la solution de repli","Ça accélère le chargement","Ça active le gras"], a:1,
+ e:"Ex. font-family: \"Arial\", \"Helvetica\", sans-serif;"},
+{c:"css", q:"Quelle propriété barre un texte ?",
+ o:["text-decoration: line-through","text-align: strike","font-style: line-through","text-indent: strike"], a:0,
+ e:"text-decoration : none | underline | overline | line-through."},
+{c:"css", q:"Comment avoir une liste ordonnée avec A, B, C… ?",
+ o:["ol { list-style-type: upper-alpha; }","ol { list-style-type: upper-roman; }","ol { text-transform: uppercase; }","ol { list-style-type: decimal; }"], a:0,
+ e:"upper-alpha = A, B, C ; upper-roman = I, II, III ; decimal = 1, 2, 3."},
+{c:"css", q:"Quelle propriété fusionne les bordures d'un tableau en une seule ?",
+ o:["border-merge: true","border-collapse: collapse","border-style: single","table-layout: fixed"], a:1,
+ e:"border-collapse: collapse."},
+{c:"css", q:"Comment colorer une ligne sur deux d'un tableau ?",
+ o:["tr:odd { … }","tr:nth-child(odd) { … }","tr::alternate { … }","tr:every(2) { … }"], a:1,
+ e:"tr:nth-child(odd) ou even."},
+{c:"css", q:"Quelle est la différence entre un élément inline et un élément block ?",
+ o:["Aucune","inline s'affiche de gauche à droite comme du texte ; block prend toute la largeur et s'empile","inline prend toute la largeur ; block s'affiche comme du texte","block est réservé aux images"], a:1,
+ e:"Inline : a, b… Block : p, ul, li… span = inline sans style, div = block sans style."},
+{c:"css", q:"Quelle balise est un <b>inline</b> sans style par défaut ?",
+ o:["&lt;div&gt;","&lt;span&gt;","&lt;p&gt;","&lt;section&gt;"], a:1,
+ e:"&lt;span&gt; = inline ; &lt;div&gt; = block."},
+{c:"css", q:"Dans le modèle de boîte, de l'intérieur vers l'extérieur, l'ordre est :",
+ o:["margin → border → padding","contenu → padding → border → margin","contenu → margin → border → padding","border → padding → margin"], a:1,
+ e:"padding = espace intérieur (contenu ↔ bordure), border = bordure, margin = espace entre les boîtes."},
+{c:"css", q:"Quelle propriété crée de l'espace ENTRE deux boîtes ?",
+ o:["padding","margin","border-width","line-height"], a:1,
+ e:"margin = extérieur ; padding = intérieur."},
+{c:"css", q:"Avec <code>border-style: dotted dashed solid double;</code> que se passe-t-il ?",
+ o:["Seul dotted est appliqué","Chaque côté a un style différent (haut, droite, bas, gauche)","C'est une erreur","Les 4 styles sont superposés"], a:1,
+ e:"Quatre valeurs = un style par côté, dans le sens des aiguilles d'une montre en partant du haut."},
+{c:"css", q:"À quoi sert <code>clear: both</code> ?",
+ o:["Effacer le contenu","Arrêter l'effet des flottants : l'élément se place sous les boîtes float","Supprimer les marges","Rendre transparent"], a:1,
+ e:"float: left/right fait flotter une boîte (le texte passe autour) ; clear stoppe cet effet."},
+{c:"css", q:"Une boîte flottante supporte-t-elle <code>vertical-align</code> ?",
+ o:["Oui","Non ; pour l'utiliser on peut passer en display: inline-block","Seulement avec float: right","Seulement dans un tableau"], a:1,
+ e:"vertical-align ne marche pas sur un float. inline-block se comporte comme un inline (attention : les espaces entre éléments comptent)."},
+{c:"css", q:"<code>position: absolute</code> positionne l'élément par rapport à…",
+ o:["la fenêtre","sa position habituelle","la boîte parente marquée position: relative (positionnée)","rien, c'est le comportement par défaut"], a:2,
+ e:"static = défaut ; fixed = coin de la fenêtre ; relative = position habituelle ; absolute = parent positionné (relative)."},
+{c:"css", q:"Quelle est la valeur par défaut de <code>position</code> ?",
+ o:["relative","absolute","static","fixed"], a:2,
+ e:"static = comportement normal."},
+{c:"css", q:"Que fait <code>.box { position: relative; left: 10px; top: 10px; }</code> ?",
+ o:["Place la boîte à 10 px du coin de la fenêtre","Décale la boîte de 10 px vers la droite et 10 px vers le bas par rapport à sa position habituelle","Ajoute 10 px de marge","Rien"], a:1,
+ e:"relative = par rapport à sa position habituelle. Les valeurs peuvent être négatives."},
+{c:"css", q:"Que ne sait PAS faire CSS ?",
+ o:["Changer les couleurs","Positionner des boîtes","Réagir à un clic, faire des boucles ou des tests (partie dynamique)","Changer la police"], a:2,
+ e:"La partie dynamique, c'est JavaScript."},
+
+/* ================= 4. JAVASCRIPT ================= */
+{c:"js", q:"Quel est le nom standardisé de JavaScript ?",
+ o:["Java","ECMAScript","TypeScript","LiveScript"], a:1,
+ e:"Le standard s'appelle ECMAScript (ES6 = 2015, ES4 abandonné)."},
+{c:"js", q:"En quelle année est sorti ECMAScript 6 (ES6) ?",
+ o:["2009","2011","2015","2021"], a:2,
+ e:"ES5 2009, ES5.1 2011, ES6 2015."},
+{c:"js", q:"Que se passe-t-il ?", code:"let x;\nconsole.log(x);",
+ o:["Erreur","Affiche 0","Affiche undefined","Affiche null"], a:2,
+ e:"Une variable déclarée mais non initialisée vaut undefined. (Une variable NON déclarée provoque une erreur.)"},
+{c:"js", q:"Que se passe-t-il ?", code:"let x = 1;\nlet x = 2;",
+ o:["x vaut 2","x vaut 1","Erreur : on ne peut pas redéclarer une variable avec let","x vaut [1, 2]"], a:2,
+ e:"Redéclarer avec let dans le même bloc est interdit."},
+{c:"js", q:"Quels sont les 3 types de base cités dans le cours ?",
+ o:["int, float, string","boolean, number, string","boolean, integer, char","number, object, function"], a:1,
+ e:"typeof true → \"boolean\", typeof 747 et typeof -34.6 → \"number\", typeof 'foo' → \"string\"."},
+{c:"js", q:"Que vaut <code>typeof -34.6</code> ?",
+ o:["\"float\"","\"double\"","\"number\"","\"decimal\""], a:2,
+ e:"Tous les nombres sont des flottants de type number ; un entier s'affiche sans « .0 »."},
+{c:"js", q:"Avec <code>a = 13</code> et <code>b = 4</code>, que vaut <code>a / b</code> ?",
+ o:["3","3.25","1","4"], a:1,
+ e:"Pas de division entière : 13 / 4 = 3.25. Et 13 % 4 = 1."},
+{c:"js", q:"Avec <code>a = 13</code> et <code>b = 4</code>, que vaut <code>a % b</code> ?",
+ o:["3.25","3","1","0"], a:2,
+ e:"% = reste de la division : 13 = 3×4 + 1."},
+{c:"js", q:"Que donne <code>0 / 0</code> ?",
+ o:["0","Erreur","Infinity","NaN"], a:3,
+ e:"NaN (Not a Number). La division ne lève jamais d'erreur (3/0 donne Infinity)."},
+{c:"js", q:"Si <code>x</code> vaut <code>NaN</code>, que vaut <code>x == x</code> ?",
+ o:["true","false","NaN","Erreur"], a:1,
+ e:"NaN n'est égal à rien, pas même à lui-même."},
+{c:"js", q:"Que vaut <code>0.1 + 0.2 == 0.3</code> ?",
+ o:["true","false","undefined","Erreur"], a:1,
+ e:"Les calculs flottants sont arrondis (0.1+0.2 = 0.30000000000000004). Règle : ne pas utiliser == / != sur des flottants."},
+{c:"js", q:"Que renvoie <code>(0.1 + 0.2).toFixed(2)</code> ?",
+ o:["0.3 (nombre)","\"0.30\" (chaîne)","\"0.3\"","0.30000000000000004"], a:1,
+ e:"toFixed(n) renvoie une chaîne avec n décimales."},
+{c:"js", q:"Que vaut <code>4 == \"4\"</code> ?",
+ o:["true","false","Erreur","undefined"], a:0,
+ e:"== convertit les types avant de comparer. Comparer des types différents donne des résultats surprenants."},
+{c:"js", q:"Que vaut <code>4 === \"4\"</code> ?",
+ o:["true","false","Erreur","undefined"], a:1,
+ e:"=== (et !==) vérifie aussi le type : number ≠ string → false."},
+{c:"js", q:"Que vaut <code>3 + 'hello'</code> ?",
+ o:["NaN","Erreur","\"3hello\"","3"], a:2,
+ e:"Dès qu'un opérande est une chaîne, + concatène. 'hello' + true → \"hellotrue\"."},
+{c:"js", q:"Qu'affiche ce code ?", code:"let x = 21;\nconsole.log(`result = ${ x * 2 }`);",
+ o:["result = ${ x * 2 }","result = 42","result = 21*2","Erreur"], a:1,
+ e:"Les template literals (backticks ` `) évaluent les expressions dans ${...}."},
+{c:"js", q:"Avec <code>age = 13</code>, que vaut <code>age &lt; 21 ? 'too young !' : 'go get your beer'</code> ?",
+ o:["'go get your beer'","'too young !'","true","Erreur"], a:1,
+ e:"Opérateur ternaire : condition ? siVrai : siFaux."},
+{c:"js", q:"Qu'affiche ce code, et que vaut <code>b</code> ensuite ?", code:"let a = false;\nlet b;\nconsole.log(a && (b = true));",
+ o:["true ; b vaut true","false ; b vaut undefined","false ; b vaut true","Erreur"], a:1,
+ e:"Court-circuit : si la gauche de && est false, la droite n'est pas évaluée. Idem pour || si la gauche est true."},
+{c:"js", q:"Qu'affiche ce code ?", code:"for (let i = 0; i < 4; i++) {\n  if (i % 2 == 0) continue;\n  console.log(i);\n}",
+ o:["0 2","1 3","0 1 2 3","1"], a:1,
+ e:"continue passe à l'itération suivante : les pairs (0 et 2) sont sautés."},
+{c:"js", q:"Avec <code>let i = 3;</code>, que renvoie <code>i++</code> et que vaut <code>i</code> ensuite ?",
+ o:["Renvoie 4, i vaut 4","Renvoie 3, i vaut 4","Renvoie 3, i vaut 3","Renvoie 4, i vaut 3"], a:1,
+ e:"Post-incrément : renvoie la valeur actuelle PUIS incrémente."},
+{c:"js", q:"Avec <code>let j = 7;</code>, que renvoie <code>++j</code> ?",
+ o:["7","8","6","Erreur"], a:1,
+ e:"Pré-incrément : incrémente PUIS renvoie la nouvelle valeur."},
+{c:"js", q:"Que signifie <code>i -= 2</code> ?",
+ o:["i = -2","i = i - 2","i == i - 2","i = 2 - i"], a:1,
+ e:"Syntaxe héritée du C : i++, i--, i += 2, i -= 2."},
+
+/* ================= 5. FONCTIONS ================= */
+{c:"fn", q:"Qu'affiche ce code ?", code:"function addOne(x) {\n  x + 1;\n}\nconsole.log(addOne(3));",
+ o:["4","3","undefined","Erreur"], a:2,
+ e:"Sans return, une fonction renvoie undefined."},
+{c:"fn", q:"Que renvoie <code>factorial(4)</code> ?", code:"function factorial(x) {\n  if (x == 1) return 1;\n  return x * factorial(x - 1);\n}",
+ o:["4","10","24","Boucle infinie"], a:2,
+ e:"Récursion : 4 × 3 × 2 × 1 = 24."},
+{c:"fn", q:"Qu'affiche <code>fun('1', '2', '3')</code> ?", code:"function fun(x, y) {\n  console.log(`${x} and ${y}`);\n}",
+ o:["1 and 2","1 and 2 and 3","Erreur : trop d'arguments","1 and 23"], a:0,
+ e:"Les arguments en trop sont ignorés."},
+{c:"fn", q:"Avec la même fonction, qu'affiche <code>fun('1')</code> ?",
+ o:["Erreur : argument manquant","1 and ","1 and undefined","1 and null"], a:2,
+ e:"Un argument manquant vaut undefined."},
+{c:"fn", q:"Comment rendre un paramètre optionnel (méthode du cours) ?",
+ o:["Le préfixer par ?","Tester s'il vaut undefined et lui donner une valeur par défaut","Impossible en JS","Le déclarer avec var"], a:1,
+ e:"let multiplier = optMultiplier === undefined ? 1 : optMultiplier; → compute(64) = 64, compute(32, 2) = 64."},
+{c:"fn", q:"Quelle fonction fléchée équivaut à <code>function(a, b) { return a + b; }</code> ?",
+ o:["(a, b) -> a + b","(a, b) => a + b","a, b => { a + b }","=> (a, b) a + b"], a:1,
+ e:"(args) => expression. Attention : avec des accolades { }, il faut écrire return."},
+{c:"fn", q:"Qu'affiche ce code ?", code:"let f = () => 7;\nlet g = x => x + 7;\nlet h = (u, v) => u * v + 7;\nconsole.log(f() + g(1) + h(2, 3));",
+ o:["21","27","28","Erreur"], a:2,
+ e:"7 + 8 + 13 = 28."},
+{c:"fn", q:"Quand peut-on omettre les parenthèses d'une fonction fléchée ?",
+ o:["Jamais","Quand il y a exactement un paramètre","Quand il n'y a aucun paramètre","Quand le corps fait une seule ligne"], a:1,
+ e:"x => x + 7 est valide ; sans paramètre il faut () => 7."},
+{c:"fn", q:"Qu'est-ce qu'une closure (fermeture) ?",
+ o:["Une fonction sans paramètre","Une fonction qui utilise des variables de la fonction englobante (de son contexte)","Une fonction qui ferme le programme","Une fonction anonyme appelée immédiatement"], a:1,
+ e:"Ex. : la fonction interne hello() utilise directement le paramètre s de printHello(s)."},
+{c:"fn", q:"Que se passe-t-il ?", code:"let c = 3;\nc(40, 7);",
+ o:["Renvoie 47","Renvoie 3","Erreur : 3 n'est pas une fonction","Renvoie undefined"], a:2,
+ e:"On peut écrire () après n'importe quelle valeur, mais ça ne marche que sur une fonction."},
+{c:"fn", q:"Qu'affiche <code>apply(x =&gt; -x, 42)</code> ?", code:"function apply(f, x) {\n  console.log(f(x));\n}",
+ o:["42","-42","x => -x","undefined"], a:1,
+ e:"Une fonction peut être passée en argument (fonction d'ordre supérieur)."},
+{c:"fn", q:"Qu'affiche <code>print(false)(42)</code> ?", code:"function print(allowPrinting) {\n  if (allowPrinting) return v => console.log(v);\n  return v => {};\n}",
+ o:["42","false","Rien","Erreur"], a:2,
+ e:"print(false) renvoie une fonction qui ne fait rien. Une fonction peut renvoyer une fonction."},
+{c:"fn", q:"<code>function foo(x) {…}</code> est équivalent à…",
+ o:["let foo = function foo(x) {…}","const foo() = x {…}","foo => (x) {…}","Rien, ça ne crée pas de variable"], a:0,
+ e:"Déclarer une fonction crée une variable du même nom ; console.log(foo) affiche la fonction."},
+{c:"fn", q:"Que renvoie <code>parseInt(\"123\")</code> ?",
+ o:["\"123\"","123 (nombre)","NaN","1"], a:1,
+ e:"parseInt / parseFloat : chaîne → nombre. toString() : valeur → chaîne. parseInt(\"hello\") → NaN."},
+{c:"fn", q:"Comment appelle-t-on une fonction appliquée à une valeur, comme <code>v.toString()</code> ?",
+ o:["Une closure","Une méthode","Un constructeur","Un callback"], a:1,
+ e:"toString() est une méthode."},
+{c:"fn", q:"Que vaut <code>Math.floor(3.6)</code> ?",
+ o:["3","4","3.6","3.5"], a:0,
+ e:"floor = arrondi vers le bas. Math.max(3,7) = 7, Math.abs(-7) = 7, Math.cos(Math.PI) = -1."},
+{c:"fn", q:"Pourquoi les fonctions mathématiques sont-elles rangées dans l'objet <code>Math</code> ?",
+ o:["Pour aller plus vite","Pour ne pas polluer l'espace de noms global","Parce que JS n'a pas de fonctions globales","Pour être compatibles avec Java"], a:1,
+ e:"Math regroupe fonctions et constantes (Math.PI…)."},
+{c:"fn", q:"Que renvoie <code>Math.floor(Math.random() * 10)</code> ?",
+ o:["Un réel entre 0 et 10","Un entier entre 0 et 9 inclus","Un entier entre 1 et 10 inclus","Toujours 0"], a:1,
+ e:"Math.random() ∈ [0, 1) (1 exclu), donc ×10 ∈ [0, 10), puis floor → 0 à 9."},
+
+/* ================= 6. SCOPE & BIZARRERIES ================= */
+{c:"scope", q:"Pourquoi ES6 a-t-il introduit <code>let</code> et <code>const</code> ?",
+ o:["Pour remplacer function","Parce que var n'a pas une portée correcte (il ignore les blocs { })","Pour les nombres entiers","Pour la compatibilité avec Java"], a:1,
+ e:"Une variable var a la portée de la fonction entière, pas du bloc."},
+{c:"scope", q:"Que se passe-t-il ?", code:"function f(a) {\n  if (a) {\n    var b = 1;\n  }\n  console.log(b);\n}\nf(true);",
+ o:["Erreur : b n'est pas défini","Affiche 1","Affiche undefined","Affiche true"], a:1,
+ e:"var ignore les accolades : b est visible dans toute la fonction."},
+{c:"scope", q:"Et si on remplace <code>var b</code> par <code>let b</code> dans le code précédent ?",
+ o:["Affiche 1","Erreur : b n'existe plus après l'accolade fermante du if","Affiche undefined","Affiche null"], a:1,
+ e:"let a la portée du bloc : b meurt à la fin du if."},
+{c:"scope", q:"Qu'affiche ce code ?", code:"function f() {\n  console.log(a);\n  var a = 3;\n}\nf();",
+ o:["3","undefined","Erreur","null"], a:1,
+ e:"Les déclarations var sont « remontées » en début de fonction (hoisting) ; l'affectation reste à sa place. Donc a existe mais vaut undefined."},
+{c:"scope", q:"Après <code>for (var index = 0; index &lt; 2; index++) {}</code>, que donne <code>console.log(\"after\", index)</code> ?",
+ o:["Erreur","after 2","after 1","after undefined"], a:1,
+ e:"Avec var, index « fuit » hors de la boucle et vaut 2 en sortie. Avec let, ce serait une erreur."},
+{c:"scope", q:"Que signifie IIFE ?",
+ o:["Immediately Invoked Function Expression : une fonction anonyme appelée immédiatement","Internal Inline Function Element","If-If-Else","Un type de boucle"], a:0,
+ e:"(function() { … })(); — l'astuce pré-ES6 pour créer une portée. Sans parenthèses (ou un nom) autour : erreur de syntaxe."},
+{c:"scope", q:"Que se passe-t-il ?", code:"const a = 13;\na = 42;",
+ o:["a vaut 42","a vaut 13, sans erreur","Erreur : une const ne s'initialise qu'une seule fois","a vaut 55"], a:2,
+ e:"const = affectée une seule fois, et obligatoirement à la déclaration."},
+{c:"scope", q:"Avec <code>a = 3</code>, qu'affiche ce code ?", code:"if (a == 4)\n  console.log('1');\n  console.log('2');",
+ o:["1 puis 2","Rien","2","1"], a:2,
+ e:"Sans accolades, seule la 1re instruction dépend du if ; l'indentation ne compte pas. Toujours mettre des accolades (cf. bug « goto fail »)."},
+{c:"scope", q:"Que fait l'ASI (Automatic Semicolon Insertion) ?",
+ o:["Elle supprime les ; en trop","Elle insère automatiquement des ; — mais la grammaire est ambiguë, donc il faut toujours écrire ;","Elle vérifie la syntaxe","Elle formate le code"], a:1,
+ e:"Ex. : « let a = f » puis à la ligne « (f(3)) » est lu comme let a = f(f(3))."},
+{c:"scope", q:"Que se passe-t-il quand on affecte une variable sans let, const ni var (ex. <code>evil = \"i'm evil !\"</code>) dans une fonction ?",
+ o:["Erreur de syntaxe","Elle devient une variable globale, accessible partout","Elle est locale au bloc","Elle est ignorée"], a:1,
+ e:"Ça crée une globale (« interdit par la convention de Genève » selon le cours)."},
+{c:"scope", q:"Une fonction interne peut-elle MODIFIER une variable de la fonction englobante ?",
+ o:["Non, seulement la lire","Oui, ce qui rend le code difficile à lire ; solution : utiliser const","Seulement si elle est déclarée avec var","Seulement avec un return"], a:1,
+ e:"Ex. changeX() fait x = 42 puis console.log(x) affiche 42."},
+{c:"scope", q:"Que vaut <code>\"foo\" - 1</code> ?",
+ o:["\"foo1\"","\"fo\"","NaN","Erreur"], a:2,
+ e:"- n'est pas une concaténation : \"foo\" ne se convertit pas en nombre → NaN. Alors que \"foo\" + 1 donne \"foo1\"."},
+{c:"scope", q:"Quel trio de résultats est correct ? <code>null &gt; 0</code>, <code>null == 0</code>, <code>null &gt;= 0</code>",
+ o:["false, false, true","false, true, true","true, false, true","false, false, false"], a:0,
+ e:"La bizarrerie du « Wat » : &gt; et &gt;= convertissent null en 0, mais == ne le fait pas. Donc null n'est ni &gt; 0 ni == 0, mais il est &gt;= 0 !"}
+];
+
+/* ---------- moteur ---------- */
+let filter = "all", order = [], submitted = false;
+const answers = {};
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function buildBar(){
+  const bar = document.getElementById("bar");
+  bar.innerHTML = "";
+  const mk = (key,label) => {
+    const b = document.createElement("button");
+    b.className = "chip" + (filter===key?" on":"");
+    b.textContent = label;
+    b.onclick = () => { filter = key; render(); };
+    bar.appendChild(b);
+  };
+  mk("all","Tout");
+  Object.entries(CH).forEach(([k,v]) => mk(k,v));
+  const p = document.createElement("span");
+  p.className = "progress"; p.id = "progress";
+  bar.appendChild(p);
+}
+
+function visible(){ return order.filter(i => filter==="all" || Q[i].c===filter); }
+
+function updateProgress(){
+  const v = visible();
+  const n = v.filter(i => answers[i] !== undefined).length;
+  document.getElementById("progress").textContent = `${n} / ${v.length} répondues`;
+}
+
+function render(){
+  buildBar();
+  const box = document.getElementById("quiz");
+  box.innerHTML = "";
+  visible().forEach((i, n) => {
+    const it = Q[i];
+    const d = document.createElement("div");
+    d.className = "q" + (submitted ? " done" : "");
+    let html = `<div class="tag">${CH[it.c]}</div><h3>${n+1}. ${it.q}</h3>`;
+    if (it.code){ html += `<pre><code></code></pre>`; }
+    it.o.forEach((opt, k) => {
+      let cls = "opt";
+      if (submitted){
+        if (k===it.a) cls += " good";
+        else if (answers[i]===k) cls += " bad";
+      }
+      html += `<label class="${cls}"><input type="radio" name="q${i}" value="${k}" ${answers[i]===k?"checked":""} ${submitted?"disabled":""}><span>${opt}</span></label>`;
+    });
+    const ok = answers[i]===it.a;
+    const verdict = answers[i]===undefined ? `<span class="verdict ko">Pas répondu.</span>` :
+      ok ? `<span class="verdict ok">Bonne réponse.</span>` : `<span class="verdict ko">Raté.</span>`;
+    html += `<div class="expl">${verdict}${it.e}</div>`;
+    d.innerHTML = html;
+    if (it.code) d.querySelector("pre code").textContent = it.code;
+    d.querySelectorAll("input").forEach(inp => inp.onchange = () => { answers[i] = +inp.value; updateProgress(); });
+    box.appendChild(d);
+  });
+  updateProgress();
+}
+
+function showScore(){
+  const v = visible();
+  const good = v.filter(i => answers[i]===Q[i].a).length;
+  const pct = Math.round(100*good/v.length);
+  const per = {};
+  v.forEach(i => { const c = Q[i].c; per[c] = per[c] || [0,0]; per[c][1]++; if(answers[i]===Q[i].a) per[c][0]++; });
+  let rows = Object.entries(per).map(([c,[g,t]]) => `<tr><td>${CH[c]}</td><td>${g} / ${t}</td></tr>`).join("");
+  const msg = pct>=85 ? "Excellent, tu maîtrises !" : pct>=65 ? "Bien, revois les points ratés ci-dessous." : "Il faut encore réviser : lis bien les explications.";
+  const s = document.getElementById("score");
+  s.style.display = "block";
+  s.innerHTML = `<h2>Score : ${good} / ${v.length} (${pct} %)</h2><p>${msg}</p><table>${rows}</table>`;
+  s.scrollIntoView({behavior:"smooth"});
+}
+
+document.getElementById("submit").onclick = () => {
+  const v = visible();
+  const missing = v.filter(i => answers[i]===undefined).length;
+  if (missing && !submitted){
+    const s = document.getElementById("score");
+    s.style.display = "block";
+    s.innerHTML = `<p>Il reste <b>${missing}</b> question(s) sans réponse. Clique encore sur « Voir mes résultats » pour corriger quand même.</p>`;
+    s.scrollIntoView({behavior:"smooth"});
+    if (s.dataset.warned === "1"){ s.dataset.warned = ""; } else { s.dataset.warned = "1"; return; }
+  }
+  submitted = true; render(); showScore();
+};
+
+document.getElementById("reset").onclick = () => {
+  submitted = false;
+  for (const k in answers) delete answers[k];
+  Q.forEach(it => {
+    const correct = it.o[it.a];
+    shuffle(it.o);
+    it.a = it.o.indexOf(correct);
+  });
+  order = shuffle(Q.map((_,i)=>i));
+  const s = document.getElementById("score"); s.style.display="none"; s.dataset.warned="";
+  render(); window.scrollTo({top:0});
+};
+
+order = Q.map((_,i)=>i);
+render();
+</script>
+</body>
+</html>

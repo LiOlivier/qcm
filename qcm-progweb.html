@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QCM – Programmation Web (Forax) – chapitres 1 à 6</title>
+<style>
+  :root{
+    --bg:#16171b; --card:#1f2026; --ink:#e8e8ec; --muted:#9a9aa3; --line:#33343c;
+    --accent:#7c94ff; --ok:#51cf66; --okbg:#1c3324; --ko:#ff6b6b; --kobg:#3a1f22;
+  }
+  html{color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  .wrap{max-width:820px;margin:0 auto;padding:28px 18px 80px}
+  h1{font-size:1.6rem;margin:0 0 4px}
+  .sub{color:var(--muted);margin:0 0 20px}
+  .bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line);margin-bottom:18px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:.85rem;cursor:pointer}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#0f1013}
+  .progress{margin-left:auto;font-size:.85rem;color:var(--muted)}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:14px}
+  .q .tag{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--accent);font-weight:600}
+  .q h3{font-size:1rem;margin:4px 0 10px;font-weight:600}
+  pre{background:#0f1013;color:#e9e9ef;padding:12px 14px;border-radius:8px;overflow-x:auto;font-size:.86rem;margin:0 0 12px}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace}
+  label.opt{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer}
+  label.opt:hover{border-color:#555660}
+  label.opt input{margin-top:4px}
+  label.opt.good{background:var(--okbg);border-color:var(--ok)}
+  label.opt.bad{background:var(--kobg);border-color:var(--ko)}
+  .expl{display:none;margin-top:10px;padding:10px 12px;border-left:3px solid var(--accent);background:#23284a;border-radius:4px;font-size:.92rem}
+  .done .expl{display:block}
+  .verdict{font-weight:700;margin-right:6px}
+  .verdict.ok{color:var(--ok)} .verdict.ko{color:var(--ko)}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+  button.main{background:var(--accent);color:#0f1013;border:0;border-radius:8px;padding:12px 20px;font-size:1rem;cursor:pointer}
+  button.sec{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:12px 20px;font-size:1rem;cursor:pointer}
+  .score{display:none;background:var(--card);border:2px solid var(--accent);border-radius:12px;padding:18px;margin-bottom:18px}
+  .score h2{margin:0 0 8px}
+  .score table{border-collapse:collapse;width:100%;font-size:.9rem}
+  .score td{padding:4px 6px;border-bottom:1px solid var(--line)}
+  .score td:last-child{text-align:right;font-weight:600}
+  .hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>QCM – Programmation Web</h1>
+  <p class="sub">Cours de Rémi Forax · 40 questions · chapitres 1 à 6 (Internet &amp; Web, HTML, CSS, JavaScript, Fonctions, Scope &amp; bizarreries). Réponds à tout, puis clique sur <b>Voir mes résultats</b> : la correction s'affiche à la fin.</p>
+
+  <div class="bar" id="bar"></div>
+  <div class="score" id="score"></div>
+  <div id="quiz"></div>
+
+  <div class="actions">
+    <button class="main" id="submit">Voir mes résultats</button>
+    <button class="sec" id="reset">Recommencer (questions mélangées)</button>
+  </div>
+</div>
+
+<script>
+const CH = {
+  web:"1. Internet & Web", html:"2. HTML", css:"3. CSS",
+  js:"4. JavaScript", fn:"5. Fonctions", scope:"6. Scope & bizarreries"
+};
+
+const Q = [
+/* ================= 1. INTERNET & WEB ================= */
+{c:"web", q:"Tu tapes ceci à la main. Pourquoi la 1re requête renvoie <code>404 Not Found</code> alors que la 2e renvoie <code>200 OK</code> ?",
+ code:"$ nc forax.github.io 80\nGET / HTTP/1.0\n\n→ HTTP/1.1 404 Not Found\n\n$ nc forax.github.io 80\nGET / HTTP/1.1\nHost: forax.github.io\n\n→ HTTP/1.1 200 OK",
+ o:["Le DNS n'a pas réussi à résoudre forax.github.io la première fois",
+    "Un même serveur (même IP) héberge plusieurs sites : sans en-tête Host, il ne sait pas quel site renvoyer. Host est obligatoire depuis HTTP/1.1",
+    "HTTP/1.0 ne connaît pas la méthode GET",
+    "Le port 80 n'accepte que HTTPS"], a:1,
+ e:"La connexion TCP a bien eu lieu (le DNS a donc marché, et le serveur répond). C'est le serveur GitHub qui, sans Host, ne sait pas quel site servir. HTTP/0.9 n'avait déjà que GET, donc 1.0 le connaît."},
+{c:"web", q:"Depuis ton PC, <code>ping</code> d'un serveur renvoie <code>ttl=53</code>. Le serveur tourne sous Linux. Combien de routeurs la réponse a-t-elle traversés ?",
+ o:["53","11","75","Impossible à savoir"], a:1,
+ e:"Le TTL est fixé par la machine qui ENVOIE le paquet (ici le serveur Linux → 64) et baisse de 1 par routeur : 64 − 53 = 11. 75 serait le calcul avec un TTL initial Windows (128)."},
+{c:"web", q:"Comment <code>traceroute</code> arrive-t-il à découvrir chaque routeur du chemin ?",
+ o:["Il demande au DNS la liste des routeurs",
+    "Il envoie des paquets avec un TTL de 1, puis 2, puis 3… ; le routeur où le TTL tombe à 0 jette le paquet et renvoie une erreur ICMP « Time Exceeded », ce qui révèle son adresse",
+    "Il utilise whois sur chaque adresse IP",
+    "Chaque routeur ajoute son adresse dans l'en-tête HTTP"], a:1,
+ e:"C'est la combinaison TTL + ICMP du cours. Les « * » sont des sondes sans réponse, et deux IP sur un même saut veulent dire que les paquets ont pris deux chemins."},
+{c:"web", q:"Tu tapes <code>https://www.univ-eiffel.fr/index.html</code>. Quel est le bon ordre des étapes ?",
+ o:["Requête GET → résolution DNS → connexion TCP → chiffrement",
+    "Résolution DNS (nom → IP) → connexion TCP → échange d'une clé symétrique grâce au chiffrement asymétrique → GET /index.html avec Host → réponse 200 + Content-Type text/html → nouvelles requêtes pour les images, CSS…",
+    "Connexion TCP → résolution DNS → GET → chiffrement de la réponse",
+    "Résolution DNS → GET en clair → le serveur chiffre la réponse avec sa clé privée"], a:1,
+ e:"Il faut l'IP avant de se connecter (DNS), la connexion avant d'échanger (TCP), le tunnel sécurisé avant d'envoyer du HTTP (HTTPS), puis le HTML qui déclenche d'autres requêtes."},
+{c:"web", q:"Tu tapes <code>http://site.fr/</code>. Le serveur répond <code>302 Found</code> vers la version https. La page contient 2 images et 1 feuille CSS. Combien de requêtes HTTP au minimum ?",
+ o:["3","4","5","6"], a:2,
+ e:"1 requête redirigée (302) + 1 pour le HTML en https + 2 images + 1 CSS = 5. Une page = plusieurs requêtes."},
+{c:"web", q:"Voici le début d'une réponse. Quelle affirmation est vraie ?",
+ code:"HTTP/1.1 200 OK\nServer: nginx\nContent-Type: image/png\nContent-Length: 19172\n\n‰PNG...",
+ o:["Le corps est une page HTML de 19172 caractères",
+    "Le corps fait 19172 octets, c'est une image PNG ; la ligne vide sépare les en-têtes du corps",
+    "Content-Type est un format inventé pour HTTP",
+    "« 200 OK » fait partie du corps"], a:1,
+ e:"Ligne de statut → en-têtes clé: valeur → ligne vide → corps. Content-Length = octets, Content-Type = type MIME (venu des e-mails)."},
+{c:"web", q:"Un attaquant s'interpose et envoie SA clé publique au navigateur à la place de celle du serveur. Qu'est-ce qui permet de déjouer ça ?",
+ o:["Le chiffrement symétrique",
+    "Le certificat : une autorité (CA) signe le lien nom de domaine ↔ clé publique, et le navigateur connaît les clés publiques des CA pour vérifier cette signature",
+    "Le TTL des paquets",
+    "Le DNS, qui garantit l'identité du serveur"], a:1,
+ e:"Le chiffrement asymétrique sert à échanger la clé symétrique, mais encore faut-il être sûr que la clé publique reçue est la bonne : c'est le rôle du certificat."},
+
+/* ================= 2. HTML ================= */
+{c:"html", q:"Qu'affiche le navigateur pour ce paragraphe ?",
+ code:"<p>a &lt;b&gt; c<!-- d --> &amp;&amp; e</p>",
+ o:["a &lt;b&gt; c &amp;&amp; e  (sans gras)","a c &amp;&amp; e avec « c » en gras","a &lt;b&gt; c d &amp;&amp; e","a &amp;lt;b&amp;gt; c &amp;amp;&amp;amp; e"], a:0,
+ e:"Les entités &lt; &gt; &amp; affichent les caractères < > & au lieu de créer des balises, et le commentaire n'est pas affiché."},
+{c:"html", q:"Avec ce HTML et ce CSS, quel(s) texte(s) sont en rouge ?",
+ code:"<section>\n  <ul>\n    <li>A</li>\n    <li><p>B</p></li>\n  </ul>\n  <p>C</p>\n</section>\n\nsection > p { color: red; }",
+ o:["B et C","C seulement","A, B et C","Aucun"], a:1,
+ e:"Dans l'arbre DOM, le p de B a pour père un li, pas la section. « > » = enfant direct. Avec « section p » (descendant), B et C seraient rouges."},
+{c:"html", q:"Quel tableau est construit correctement, et quelles lignes seront grisées ?",
+ code:"<table>\n  <thead><tr><th>Nom</th><th>%</th></tr></thead>\n  <tbody>\n    <tr><td>Azote</td><td>78</td></tr>\n    <tr><td>Oxygène</td><td>20</td></tr>\n    <tr><td>Argon</td><td>1</td></tr>\n  </tbody>\n</table>\n\ntbody tr:nth-child(odd) { background-color: lightgray; }",
+ o:["Oxygène seulement (la ligne d'en-tête compte comme 1re ligne)","Azote et Argon","Toutes les lignes","Aucune : nth-child ne marche pas sur tr"], a:1,
+ e:"nth-child compte parmi les enfants du même parent (ici tbody) : Azote = 1 (impair), Oxygène = 2, Argon = 3 (impair)."},
+{c:"html", q:"La page <code>cours.html</code> contient <code>&lt;h2&gt;&lt;a id=\"css\"&gt;CSS&lt;/a&gt;&lt;/h2&gt;</code>. Depuis <code>accueil.html</code> (même dossier), quel lien amène directement à cette partie ?",
+ o:["&lt;a href=\"#css\"&gt;","&lt;a href=\"cours.html#css\"&gt;","&lt;a id=\"cours.html#css\"&gt;","&lt;a href=\"cours.html/css\"&gt;"], a:1,
+ e:"#css seul chercherait l'ancre dans accueil.html. On combine document + ancre : cours.html#css."},
+{c:"html", q:"Lequel de ces documents est du HTML 5 valide ?",
+ code:"A) <html><!DOCTYPE html><body><p>x</p></body></html>\n\nB) <!DOCTYPE html><html><head><title>T</title></head>\n   <body><p><b>x <i>y</b></i></p></body></html>\n\nC) <!DOCTYPE html><html><head><title>T</title></head>\n   <body><p><b>x <i>y</i></b><br>z</p></body></html>\n\nD) <!DOCTYPE html><html><head></head>\n   <body><title>T</title><p>x</p></body></html>",
+ o:["A","B","C","D"], a:2,
+ e:"A : le DOCTYPE doit être AVANT html. B : éléments entrelacés interdits. D : title va dans head. C : bien imbriqué, et br n'a pas de balise fermante."},
+{c:"html", q:"Tu dois choisir un format pour : (1) un logo affiché aussi bien en 32 px qu'en 2000 px, (2) une photo de vacances légère, (3) une capture d'écran de code qui doit rester nette. Quel trio ?",
+ o:["(1) PNG (2) SVG (3) JPEG","(1) SVG (2) JPEG (3) PNG","(1) GIF (2) PNG (3) SVG","(1) JPEG (2) JPEG (3) JPEG"], a:1,
+ e:"SVG = vectoriel (se redimensionne sans flou). JPEG = compression avec perte, idéal pour les photos. PNG = sans perte, net pour le texte. Le serveur les enverra avec image/svg+xml, image/jpeg, image/png."},
+{c:"html", q:"Avec ce CSS, que voit-on devant le 2e élément de la liste imbriquée ?",
+ code:"ol { list-style-type: upper-alpha; }\nol ol { list-style-type: lower-roman; }\n\n<ol>\n  <li>Intro\n    <ol>\n      <li>Histoire</li>\n      <li>Versions</li>\n    </ol>\n  </li>\n</ol>",
+ o:["B.","ii.","II.","2."], a:1,
+ e:"La liste interne est un ol descendant d'un ol : la règle « ol ol » s'applique (plus précise et écrite après) → chiffres romains minuscules : i, ii."},
+
+/* ================= 3. CSS ================= */
+{c:"css", q:"De quelle couleur est le texte « Deux » ?",
+ code:"body    { color: blue; }\n.alerte { color: red; }\nli      { color: green; }\n\n<ul class=\"alerte\">\n  <li>Un</li>\n  <li><span>Deux</span></li>\n</ul>",
+ o:["Bleu (hérité de body)","Rouge (hérité de .alerte)","Vert","Noir (span n'a pas de style)"], a:2,
+ e:"Le li a sa propre règle (vert), qui l'emporte sur ce qu'il hériterait de ul. Le span n'a pas de règle : il hérite de son père direct, le li → vert."},
+{c:"css", q:"Quelle largeur totale (marges comprises) occupe cette boîte ?",
+ code:".box {\n  width: 200px;\n  padding: 20px;\n  border: 5px solid black;\n  margin: 10px;\n}",
+ o:["200 px","240 px","250 px","270 px"], a:3,
+ e:"Par défaut width = le contenu seul. Puis padding des 2 côtés (40), bordure (10), marge (20) : 200 + 40 + 10 + 20 = 270 px."},
+{c:"css", q:"Deux div l'une sous l'autre ont chacune <code>margin: 50px</code>. Quel espace vertical les sépare ?",
+ o:["50 px","100 px","25 px","0 px"], a:0,
+ e:"Les marges verticales entre deux blocs fusionnent (on garde la plus grande) : 50 px, comme dans l'exemple box-model du cours."},
+{c:"css", q:"Le texte de ce span fait quelle taille ? (police par défaut du navigateur)",
+ code:"p      { font-size: 1.5em; }\np span { font-size: 2em; }\n\n<p>Texte <span>important</span></p>",
+ o:["32 px","36 px","48 px","56 px"], a:2,
+ e:"em = proportionnel à la fonte courante (du parent). 1em = 16 px par défaut → p = 24 px → span = 2 × 24 = 48 px."},
+{c:"css", q:"On veut l'icône dans le coin bas-droit du conteneur. On oublie <code>position: relative</code> sur <code>.container</code>. Que se passe-t-il ?",
+ code:".container { border: 1px solid black; }\n.valid::after {\n  content: url(good.png);\n  position: absolute;\n  right: 5px;\n  bottom: 0px;\n}",
+ o:["Rien ne change","L'icône se place par rapport à un ancêtre positionné plus haut (au pire la page), donc plus dans le coin du conteneur","L'icône disparaît","L'icône est décalée de 5 px par rapport à sa position habituelle"], a:1,
+ e:"absolute se positionne par rapport au parent marqué relative. Sans lui, le navigateur remonte l'arbre jusqu'à en trouver un. « Décalée par rapport à sa position habituelle », c'est le comportement de relative."},
+{c:"css", q:"Trois boîtes de hauteurs différentes doivent être côte à côte, alignées par le BAS. Quelle solution marche ?",
+ o:[".box { float: left; vertical-align: bottom; }",".box { display: inline-block; vertical-align: bottom; }",".box { display: block; vertical-align: bottom; }",".box { position: absolute; vertical-align: bottom; }"], a:1,
+ e:"Un float ne supporte pas vertical-align, et un block prend toute la largeur (les boîtes s'empilent). inline-block se comporte comme du texte → vertical-align marche. Attention aux espaces entre les balises, qui s'affichent."},
+{c:"css", q:"Quel sélecteur colore la 1re lettre d'un paragraphe uniquement s'il est le premier enfant direct d'un article ?",
+ o:["article p::first-letter","article > p:first-child::first-letter","article > p::first-child:first-letter","article:first-child > p::first-letter"], a:1,
+ e:"> = enfant direct ; :first-child (pseudo-classe) filtre sur la position ; ::first-letter (pseudo-élément) cible la lettre, et se met à la fin."},
+
+/* ================= 4. JAVASCRIPT ================= */
+{c:"js", q:"Qu'affiche ce code ?",
+ code:"console.log(1 + 2 + \"3\", \"1\" + 2 + 3);",
+ o:["33 123","6 6","123 123","33 15"], a:0,
+ e:"Évaluation de gauche à droite : 1 + 2 = 3 (nombres), puis 3 + \"3\" = \"33\". De l'autre côté, \"1\" + 2 = \"12\" (chaîne), puis \"12\" + 3 = \"123\"."},
+{c:"js", q:"Qu'affiche ce code ?",
+ code:"let i = 0;\nlet s = \"\";\nwhile (i++ < 3) {\n  s += i;\n}\nconsole.log(s, i);",
+ o:["012 3","123 3","123 4","0123 4"], a:2,
+ e:"i++ compare l'ANCIENNE valeur puis incrémente. Tours : 0<3 (i=1), 1<3 (i=2), 2<3 (i=3), puis 3<3 faux… mais i passe quand même à 4. s += i concatène car s est une chaîne."},
+{c:"js", q:"Qu'affiche ce code ?",
+ code:"let x;\nlet y = x || 10;\nlet z = (y > 5) && \"grand\";\nconsole.log(y, z);",
+ o:["undefined grand","10 true","10 grand","undefined false"], a:2,
+ e:"x vaut undefined (déclarée, non initialisée), considéré comme faux → || évalue et renvoie la droite (10). && : la gauche est vraie, donc on évalue et renvoie la droite (\"grand\")."},
+{c:"js", q:"Qu'affiche ce code ?",
+ code:"let r = 0 / 0;\nconsole.log(r == r, 0.1 + 0.2 === 0.3, (0.1 + 0.2).toFixed(1) == 0.3);",
+ o:["true false true","false false true","false true false","false false false"], a:1,
+ e:"NaN n'est égal à rien, même pas à lui-même. 0.1 + 0.2 = 0.30000000000000004. toFixed(1) donne la CHAÎNE \"0.3\", et == convertit : \"0.3\" == 0.3 → true."},
+{c:"js", q:"Qu'affiche ce code ?",
+ code:"let s = 0;\nfor (let i = 0; i < 10; i++) {\n  if (i % 2 == 0) continue;\n  if (i > 6) break;\n  s += i;\n}\nconsole.log(s);",
+ o:["9","16","25","0"], a:0,
+ e:"Les pairs sont sautés (continue). On ajoute 1, 3, 5. À i = 7, break arrête la boucle. 1 + 3 + 5 = 9."},
+{c:"js", q:"Qu'affiche ce code ?",
+ code:"console.log(typeof (4 + \"4\"), 4 - \"4\", 4 == \"4\" && 4 !== \"4\");",
+ o:["number 0 false","string 0 true","string NaN true","string \"0\" false"], a:1,
+ e:"+ avec une chaîne concatène → \"44\" (string). - n'existe que pour les nombres : \"4\" est converti → 0. == convertit (true), !== compare aussi le type (true) → true."},
+{c:"js", q:"Qu'affiche ce code ?",
+ code:"let a = 13, b = 4;\nlet j = 5;\nlet res = a / b > 3 ? a % b + j++ : ++j;\nconsole.log(`${res} ${j}`);",
+ o:["6 6","7 6","2 5","6 5"], a:0,
+ e:"13 / 4 = 3.25 > 3 → branche « vrai ». a % b = 1, j++ renvoie 5 puis j devient 6 → res = 1 + 5 = 6. Le template affiche « 6 6 »."},
+
+/* ================= 5. FONCTIONS ================= */
+{c:"fn", q:"Qu'affiche ce code ?",
+ code:"function compteur() {\n  let n = 0;\n  return () => { n++; return n; };\n}\nconst c1 = compteur();\nconst c2 = compteur();\nc1(); c1();\nconsole.log(c1(), c2());",
+ o:["3 3","1 1","3 1","Erreur : n n'existe plus"], a:2,
+ e:"Chaque appel à compteur() crée un NOUVEAU n, capturé par la fonction fléchée (closure). c1 en est à 3, c2 démarre à 1. n survit tant que la closure existe."},
+{c:"fn", q:"Qu'affiche ce code ?",
+ code:"const twice = f => x => f(f(x));\nconst add3 = x => x + 3;\nconsole.log(twice(add3)(1), twice(x => x * x)(3));",
+ o:["4 9","7 81","7 18","Erreur"], a:1,
+ e:"twice prend une fonction et renvoie une fonction. add3(add3(1)) = 7 ; carré(carré(3)) = 9² = 81."},
+{c:"fn", q:"Qu'affiche ce code ?",
+ code:"function greet(name, punct) {\n  const p = punct === undefined ? \"!\" : punct;\n  return `Hello ${name}${p}`;\n}\nconsole.log(greet(\"Bob\", \"?\", \"x\"), greet());",
+ o:["Hello Bob?x Hello !","Hello Bob? Hello undefined!","Erreur : trop d'arguments","Hello Bob? Hello !"], a:1,
+ e:"\"x\" en trop est ignoré. Sans argument, name et punct valent undefined : punct est remplacé par \"!\", mais name non → « Hello undefined! »."},
+{c:"fn", q:"Qu'affiche ce code ?",
+ code:"const f = x => { x * 2 };\nconst g = x => x * 2;\nconsole.log(f(3), g(3));",
+ o:["6 6","undefined 6","6 undefined","Erreur"], a:1,
+ e:"Avec des accolades, le corps est un bloc d'instructions : sans return, la fonction renvoie undefined. Sans accolades, l'expression est renvoyée."},
+{c:"fn", q:"Que renvoie <code>f(6)</code> ?",
+ code:"function f(n) {\n  return n <= 1 ? n : f(n - 1) + f(n - 2);\n}",
+ o:["6","8","13","720"], a:1,
+ e:"C'est Fibonacci (récursion + ternaire) : f(0)=0, 1, 1, 2, 3, 5, f(6)=8."},
+{c:"fn", q:"Qu'affiche ce code ?",
+ code:"const de = () => Math.floor(Math.random() * 6) + 1;\nconsole.log(parseInt(\"21.3\") + parseFloat(\"0.7\"), \"21.3\" + 0.7);\n// et de() renvoie…",
+ o:["22 21.30.7 ; de() renvoie un entier de 0 à 5","21.7 21.30.7 ; de() renvoie un entier de 1 à 6","22 22 ; de() renvoie un entier de 1 à 6","21.7 22 ; de() renvoie un réel de 1 à 7"], a:1,
+ e:"parseInt(\"21.3\") = 21 (s'arrête au point), + 0.7 = 21.7. \"21.3\" + 0.7 concatène. Math.random() ∈ [0,1) → ×6 ∈ [0,6) → floor = 0 à 5 → +1 = 1 à 6."},
+
+/* ================= 6. SCOPE & BIZARRERIES ================= */
+{c:"scope", q:"Qu'affiche ce code ? Et si on remplace <code>var</code> par <code>let</code> ?",
+ code:"let f;\nfor (var i = 0; i < 3; i++) {\n  if (i == 0) f = () => i;\n}\nconsole.log(f());",
+ o:["0, et 0 avec let","3, et 0 avec let","3, et 3 avec let","0, et erreur avec let"], a:1,
+ e:"Avec var, il n'y a qu'UN i pour toute la fonction ; la closure lit sa valeur au moment de l'appel → 3. Avec let, chaque tour a son propre i (portée de bloc) → la closure garde 0."},
+{c:"scope", q:"Qu'affiche ce code ?",
+ code:"var x = 1;\nfunction f() {\n  console.log(x);\n  var x = 2;\n}\nf();",
+ o:["1","2","undefined","Erreur"], a:2,
+ e:"La déclaration var x est remontée en début de f (pas l'affectation) : dans f, x est la variable LOCALE, qui vaut encore undefined. Le x global est masqué."},
+{c:"scope", q:"Qu'affiche ce code ? Et si on écrit <code>const total = 10;</code> dans <code>init</code> ?",
+ code:"function init() { total = 10; }\nfunction add(v) { total = total + v; }\ninit();\nadd(5);\nconsole.log(total);",
+ o:["15 ; avec const : 15 aussi","15 ; avec const : erreur, total n'existe pas en dehors de init","Erreur ; avec const : 15","undefined ; avec const : 10"], a:1,
+ e:"Sans déclaration, total devient une variable globale, visible partout (à éviter !). Avec const, total est locale à init : add ne la voit pas → erreur."},
+{c:"scope", q:"Qu'affiche ce code ?",
+ code:"function f() {\n  return\n    42;\n}\nconsole.log(f());",
+ o:["42","undefined","Erreur de syntaxe","null"], a:1,
+ e:"ASI : JavaScript insère un ; juste après return (fin de ligne). La fonction renvoie donc undefined et 42 n'est jamais atteint. D'où la règle : toujours écrire ses ; soi-même."},
+{c:"scope", q:"Qu'affiche ce code ?",
+ code:"let a = 3, b = 0;\nif (a > 5)\n  b++;\n  b += 10;\nconsole.log(b);",
+ o:["0","1","10","11"], a:2,
+ e:"Sans accolades, seul b++ dépend du if (l'indentation ne compte pas). a > 5 est faux, b++ est sauté, mais b += 10 s'exécute → 10."},
+{c:"scope", q:"Qu'affiche ce code ?",
+ code:"(function () {\n  var secret = 1;\n})();\nconsole.log(\"5\" - 2, \"5\" + 2, null >= 0 && null == 0, typeof secret);",
+ o:["3 52 false undefined","3 7 true number","\"3\" 52 false 1","NaN 52 true undefined"], a:0,
+ e:"L'IIFE crée une portée : secret n'est pas visible dehors (typeof d'une variable inconnue renvoie \"undefined\" sans erreur). - convertit \"5\" en nombre → 3 ; + concatène → \"52\". null >= 0 est true mais null == 0 est false → false."}
+];
+
+/* ---------- moteur ---------- */
+let filter = "all", order = [], submitted = false;
+const answers = {};
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function buildBar(){
+  const bar = document.getElementById("bar");
+  bar.innerHTML = "";
+  const mk = (key,label) => {
+    const b = document.createElement("button");
+    b.className = "chip" + (filter===key?" on":"");
+    b.textContent = label;
+    b.onclick = () => { filter = key; render(); };
+    bar.appendChild(b);
+  };
+  mk("all","Tout");
+  Object.entries(CH).forEach(([k,v]) => mk(k,v));
+  const p = document.createElement("span");
+  p.className = "progress"; p.id = "progress";
+  bar.appendChild(p);
+}
+
+function visible(){ return order.filter(i => filter==="all" || Q[i].c===filter); }
+
+function updateProgress(){
+  const v = visible();
+  const n = v.filter(i => answers[i] !== undefined).length;
+  document.getElementById("progress").textContent = `${n} / ${v.length} répondues`;
+}
+
+function render(){
+  buildBar();
+  const box = document.getElementById("quiz");
+  box.innerHTML = "";
+  visible().forEach((i, n) => {
+    const it = Q[i];
+    const d = document.createElement("div");
+    d.className = "q" + (submitted ? " done" : "");
+    let html = `<div class="tag">${CH[it.c]}</div><h3>${n+1}. ${it.q}</h3>`;
+    if (it.code){ html += `<pre><code></code></pre>`; }
+    it.o.forEach((opt, k) => {
+      let cls = "opt";
+      if (submitted){
+        if (k===it.a) cls += " good";
+        else if (answers[i]===k) cls += " bad";
+      }
+      html += `<label class="${cls}"><input type="radio" name="q${i}" value="${k}" ${answers[i]===k?"checked":""} ${submitted?"disabled":""}><span>${opt}</span></label>`;
+    });
+    const ok = answers[i]===it.a;
+    const verdict = answers[i]===undefined ? `<span class="verdict ko">Pas répondu.</span>` :
+      ok ? `<span class="verdict ok">Bonne réponse.</span>` : `<span class="verdict ko">Raté.</span>`;
+    html += `<div class="expl">${verdict}${it.e}</div>`;
+    d.innerHTML = html;
+    if (it.code) d.querySelector("pre code").textContent = it.code;
+    d.querySelectorAll("input").forEach(inp => inp.onchange = () => { answers[i] = +inp.value; updateProgress(); });
+    box.appendChild(d);
+  });
+  updateProgress();
+}
+
+function showScore(){
+  const v = visible();
+  const good = v.filter(i => answers[i]===Q[i].a).length;
+  const pct = Math.round(100*good/v.length);
+  const per = {};
+  v.forEach(i => { const c = Q[i].c; per[c] = per[c] || [0,0]; per[c][1]++; if(answers[i]===Q[i].a) per[c][0]++; });
+  let rows = Object.entries(per).map(([c,[g,t]]) => `<tr><td>${CH[c]}</td><td>${g} / ${t}</td></tr>`).join("");
+  const msg = pct>=85 ? "Excellent, tu maîtrises !" : pct>=65 ? "Bien, revois les points ratés ci-dessous." : "Il faut encore réviser : lis bien les explications.";
+  const s = document.getElementById("score");
+  s.style.display = "block";
+  s.innerHTML = `<h2>Score : ${good} / ${v.length} (${pct} %)</h2><p>${msg}</p><table>${rows}</table>`;
+  s.scrollIntoView({behavior:"smooth"});
+}
+
+document.getElementById("submit").onclick = () => {
+  const v = visible();
+  const missing = v.filter(i => answers[i]===undefined).length;
+  if (missing && !submitted){
+    const s = document.getElementById("score");
+    s.style.display = "block";
+    s.innerHTML = `<p>Il reste <b>${missing}</b> question(s) sans réponse. Clique encore sur « Voir mes résultats » pour corriger quand même.</p>`;
+    s.scrollIntoView({behavior:"smooth"});
+    if (s.dataset.warned === "1"){ s.dataset.warned = ""; } else { s.dataset.warned = "1"; return; }
+  }
+  submitted = true; render(); showScore();
+};
+
+document.getElementById("reset").onclick = () => {
+  submitted = false;
+  for (const k in answers) delete answers[k];
+  Q.forEach(it => {
+    const correct = it.o[it.a];
+    shuffle(it.o);
+    it.a = it.o.indexOf(correct);
+  });
+  order = shuffle(Q.map((_,i)=>i));
+  const s = document.getElementById("score"); s.style.display="none"; s.dataset.warned="";
+  render(); window.scrollTo({top:0});
+};
+
+order = Q.map((_,i)=>i);
+render();
+</script>
+</body>
+</html>
